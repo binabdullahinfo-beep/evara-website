@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>إيفارا ريزيدنس — المعبيلة</title>
+<link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;500;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Poppins:wght@500;600&display=swap" rel="stylesheet">
+<style>
+/*
+VOICE: a night-time sales gallery — quiet, expensive, cinematic.
+IDEA: the architect's model in a dark room: lift the roof off any floor and the flats glow by status.
+PICTURE: the real Mabillah BIM model in WebGL, lit windows, floors cut away, live pins per flat.
+COLOUR/TYPE: midnight blue-black, warm window amber, white pills; status green/amber/red; Alexandria + Plex Arabic.
+LAYOUT: film intro → full-bleed 3D explorer with tabs, level rail, home dock → models → gallery → contact → staff office.
+*/
+:root{color-scheme:dark;--bg:#090c13;--bg2:#0f1420;--glass:rgba(14,18,28,.9);--ink:#f2ede6;--mut:#9aa0ad;--line:rgba(255,255,255,.12);
+--amb:#ffb86b;--av:#3fb37a;--rs:#e8a72a;--sd:#d9574a;--un:#7f8592}
+*{box-sizing:border-box;min-width:0}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans Arabic",Tahoma,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Alexandria,sans-serif;font-weight:700;line-height:1.1;margin:0;text-wrap:balance}
+h2{font-size:clamp(30px,4.4vw,48px)}h3{font-size:20px}
+a{color:inherit}.mut{color:var(--mut)}.lat{font-family:Poppins,sans-serif}
+button{font:inherit;color:inherit}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:9px 20px;border-radius:99px;border:1px solid var(--line);background:var(--glass);cursor:pointer;text-decoration:none;font-weight:600;font-size:15px;white-space:nowrap}
+.pill.w{background:#fff;color:#0b0d12;border-color:#fff}.pill.sm{min-height:36px;padding:5px 14px;font-size:14px}
+.pill:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--amb);outline-offset:2px}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 10px;border-radius:99px;color:#fff;white-space:nowrap}
+.t-available{background:var(--av)}.t-reserved{background:var(--rs)}.t-sold{background:var(--sd)}.t-unknown{background:var(--un)}
+/* ---------- experience ---------- */
+#exp{position:relative;height:100vh;height:100svh;min-height:600px;overflow:hidden;background:radial-gradient(120% 80% at 50% 105%,#3a2a2a 0%,#1a1d2c 38%,#0a0e18 70%,#06080d 100%)}
+#stage{position:absolute;inset:0;background:#05070c}
+[dir=ltr] body.intro #vExt::after{background:linear-gradient(90deg,rgba(5,7,12,.82) 0%,rgba(5,7,12,.45) 32%,transparent 55%),linear-gradient(0deg,rgba(5,7,12,.6),transparent 30%)!important}
+body.intro #vExt::after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(270deg,rgba(5,7,12,.82) 0%,rgba(5,7,12,.45) 32%,transparent 55%),linear-gradient(0deg,rgba(5,7,12,.6),transparent 30%)}
+@media(max-width:760px){body.intro #vExt::after{background:linear-gradient(0deg,rgba(5,7,12,.95) 30%,transparent 62%)}#extVid{object-fit:contain!important;object-position:top}}
+.view{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .7s ease,transform 1.1s cubic-bezier(.2,.8,.2,1)}
+.view.on{opacity:1;pointer-events:auto}
+#vExt svg,#vExt video,#vPhoto video{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:cover}
+#extVid{transition:opacity .8s}#extVid.done{opacity:0;pointer-events:none}
+#vExt.zoom{transform:scale(1.25);opacity:0}
+.fband{fill:rgba(255,196,120,0);stroke:rgba(255,255,255,0);stroke-width:2;cursor:pointer;transition:fill .25s,stroke .25s}
+.fband:hover,.fband:focus,.fband.sel{fill:rgba(255,190,110,.26);stroke:rgba(255,236,200,.9);outline:none}
+#bandG.hint .fband{stroke:rgba(255,255,255,.22)}
+.btip{position:absolute;z-index:7;pointer-events:none;padding:8px 14px;border-radius:12px;background:rgba(10,12,18,.92);border:1px solid var(--line);font-size:14px;opacity:0;transition:opacity .15s;white-space:nowrap}
+.btip b{font:700 16px Alexandria;margin-inline-end:8px}
+#vFloor{background:radial-gradient(70% 60% at 50% 55%,#2a2320 0%,#0d0f15 70%,#06080d 100%)}
+.fwrap{position:absolute;inset:96px 0 128px;perspective:2200px;display:grid;place-items:center}
+.fplane{height:100%;aspect-ratio:1744/2336;max-width:92vw;transform:rotateX(26deg) scale(.98);transform-origin:50% 50%;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 40px 50px rgba(0,0,0,.7))}
+#vFloor:not(.on) .fplane{transform:rotateX(62deg) scale(.7)}
+.fplane svg{width:100%;height:100%;display:block}
+.zone{stroke-width:7;cursor:pointer;transition:fill-opacity .25s,stroke-opacity .25s;fill-opacity:0;stroke-opacity:.55;stroke-linejoin:round}
+.zone:hover,.zone.sel{fill-opacity:.3;stroke-opacity:1}.zone.dim{stroke-opacity:.15}
+.fnote{position:absolute;bottom:104px;left:0;right:0;text-align:center;font-size:12px;color:var(--mut);margin:0}
+#vPhoto{background:#000}
+#pins{position:absolute;inset:0;pointer-events:none}
+.pin{position:absolute;transform:translate(-50%,-50%);pointer-events:auto;width:46px;height:46px;border-radius:50%;border:2px solid var(--c);background:rgba(10,12,18,.82);display:grid;place-items:center;font:600 13px Poppins,sans-serif;cursor:pointer;transition:transform .2s,opacity .3s;box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 22%,transparent)}
+.pin:hover,.pin.on{transform:translate(-50%,-50%) scale(1.15);background:var(--c);color:#0b0d12}
+.pin.dim{opacity:.25}
+.top{position:absolute;top:0;inset-inline:0;display:flex;align-items:center;gap:10px;padding:16px clamp(14px,3vw,32px);z-index:5;flex-wrap:wrap}
+.brand{margin-inline-end:auto;line-height:1.05}.brand b{font:700 22px Alexandria}.brand small{display:block;font:500 10px Poppins;letter-spacing:.2em;color:var(--mut)}
+.tabs{display:flex;gap:4px;padding:4px;border-radius:99px;background:var(--glass);border:1px solid var(--line);}
+.tabs button{border:0;background:transparent;border-radius:99px;padding:8px 18px;min-height:38px;cursor:pointer;font-weight:600;font-size:14px;color:var(--mut)}
+.tabs button[aria-pressed=true]{background:#fff;color:#0b0d12}
+.rail{position:absolute;inset-inline-end:clamp(12px,2.4vw,28px);top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:6px;z-index:5}
+.rail button{width:46px;height:36px;border-radius:99px;border:1px solid var(--line);background:var(--glass);cursor:pointer;font:600 13px Poppins;color:var(--mut);position:relative}
+.rail button[aria-pressed=true]{background:#fff;color:#0b0d12}
+.rail button i{position:absolute;inset-inline-start:-5px;top:50%;width:7px;height:7px;border-radius:50%;transform:translateY(-50%);background:var(--av)}
+.hero{position:absolute;inset-inline-start:clamp(16px,4vw,56px);bottom:clamp(24px,6vh,64px);max-width:min(560px,80vw);z-index:4;transition:opacity .6s,transform .6s}
+.hero h1{font-size:clamp(54px,9vw,112px);font-weight:700;letter-spacing:-.01em}
+.hero p{color:#c9c4bc;font-size:17px;margin:10px 0 22px;max-width:30em}
+.stats{display:flex;gap:clamp(18px,4vw,44px);margin-top:28px}.stats b{display:block;font:600 clamp(22px,3vw,30px) Poppins}.stats span{font-size:13px;color:var(--mut)}
+.hidden-ui{opacity:0;pointer-events:none;transform:translateY(16px)}
+.lvlname{position:absolute;inset-inline-start:clamp(16px,4vw,56px);top:96px;z-index:4;transition:opacity .4s}
+.lvlname b{display:block;font:700 clamp(30px,4vw,44px) Alexandria}
+.dock{position:absolute;bottom:18px;inset-inline:clamp(12px,3vw,32px);z-index:5;display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 8px;transition:opacity .4s}
+.dock::-webkit-scrollbar{height:4px}.dock::-webkit-scrollbar-thumb{background:#ffffff30;border-radius:9px}
+.hc{scroll-snap-align:start;flex:0 0 auto;width:250px;text-align:start;border-radius:16px;border:1px solid var(--line);background:var(--glass);padding:12px 14px;cursor:pointer;display:grid;grid-template-columns:auto 1fr;gap:2px 12px;align-items:center}
+.hc b{grid-row:span 2;font:600 32px Poppins}.hc .s{font-size:12px;color:var(--mut)}.hc.on{border-color:#fff}
+.side{position:absolute;top:84px;bottom:16px;inset-inline-start:clamp(12px,2vw,24px);width:min(380px,calc(100vw - 24px));z-index:8;border-radius:20px;background:rgba(12,15,23,.92);border:1px solid var(--line);overflow:auto;transform:translateX(110%);transition:transform .45s cubic-bezier(.2,.8,.2,1)}
+[dir=rtl] .side{transform:translateX(110%)}[dir=ltr] .side{transform:translateX(-110%)}
+html[lang=en] h1,html[lang=en] h2,html[lang=en] h3{font-family:Poppins,Alexandria,sans-serif;letter-spacing:-.01em}html[lang=en] body{font-family:Poppins,'IBM Plex Sans Arabic',sans-serif;font-size:15.5px}#langBtn{min-width:56px}.side.on{transform:none!important}
+.side img.hero-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:#fff;display:block;cursor:zoom-in}
+.side .b{padding:18px}.spec{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}.spec span{display:block;font-size:12px;color:var(--mut)}.spec b{font-weight:600}
+.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}.thumbs img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;cursor:pointer;background:#fff}
+.x{position:absolute;top:10px;inset-inline-end:10px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(0,0,0,.55);cursor:pointer;font-size:20px;z-index:2}
+.scard{position:absolute;z-index:5;inset-inline-end:clamp(80px,7vw,110px);bottom:130px;width:min(340px,70vw);border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--glass);cursor:pointer;transition:opacity .5s,transform .5s}.scard video,.scard img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}.scard div{padding:12px 14px}.scard b{font:700 18px Alexandria;display:block}
+.tip{position:absolute;z-index:7;pointer-events:none;width:210px;border-radius:14px;background:rgba(12,15,23,.95);border:1px solid var(--line);overflow:hidden;opacity:0;transition:opacity .15s;font-size:13px}
+.tip img{width:100%;height:110px;object-fit:cover;background:#fff;display:block}.tip div{padding:8px 10px}
+/* film */
+#film{position:absolute;inset:0;z-index:20;background:#000;transition:opacity 1.1s}
+#film video{width:100%;height:100%;object-fit:cover;opacity:.9}
+#film .fx{position:absolute;inset:0;background:linear-gradient(0deg,rgba(0,0,0,.78),transparent 55%),linear-gradient(180deg,rgba(0,0,0,.5),transparent 25%);display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(20px,6vw,80px)}
+#film h1{font-size:clamp(58px,11vw,140px);animation:rise 1.6s .3s both}#film p{font-size:clamp(16px,2vw,20px);color:#ddd6cc;margin:8px 0 26px;animation:rise 1.6s .7s both}
+#film .row{animation:rise 1.6s 1.1s both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}}
+#film.gone{opacity:0;pointer-events:none}
+.loading{position:absolute;bottom:12px;inset-inline-end:16px;z-index:6;font-size:12px;color:var(--mut)}
+/* sections */
+.band{padding:clamp(48px,7vw,110px) max(5vw,16px)}.in{max-width:1240px;margin:0 auto}
+.models{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:30px}
+.mc{background:var(--bg2);border:1px solid var(--line);border-radius:18px;overflow:hidden;text-align:start;cursor:pointer;padding:0}
+.mc img{width:100%;aspect-ratio:1;object-fit:cover;background:#fff;display:block;filter:invert(.92) hue-rotate(180deg) brightness(.95);transition:filter .3s}
+.mc:hover img{filter:none}.mc div{padding:14px 16px}.mc dl{display:grid;grid-template-columns:auto 1fr;gap:2px 12px;margin:8px 0 0;font-size:14px}.mc dt{color:var(--mut)}.mc dd{margin:0}
+.gal{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;margin-top:26px;padding-bottom:6px}.gal img{scroll-snap-align:start;height:min(72vh,560px);border-radius:16px;flex:none}
+.ct{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:26px}.ct>div{background:var(--bg2);border:1px solid var(--line);border-radius:18px;padding:20px}
+.note{font-size:13px;color:var(--mut);max-width:72ch}
+.life{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:220px;gap:12px;margin-top:28px}
+.lv{margin:0;position:relative;border-radius:18px;overflow:hidden;cursor:pointer;background:#000}.lv.big{grid-column:span 2;grid-row:span 2}
+.lv video,.lv img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .8s}.lv:hover video,.lv:hover img{transform:scale(1.04)}
+.lv figcaption{position:absolute;inset:auto 0 0 0;padding:28px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75))}.lv figcaption b{display:block;font:700 18px Alexandria}.lv figcaption span{font-size:13px;color:#d6cfc4}
+@media(max-width:860px){.life{grid-template-columns:1fr 1fr;grid-auto-rows:170px}}
+footer{padding:28px max(5vw,16px);border-top:1px solid var(--line);color:var(--mut);font-size:13px}
+/* modal + admin */
+.mod{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px}.mod.on{display:flex}
+.box{background:#121725;border:1px solid var(--line);border-radius:20px;max-width:960px;width:100%;max-height:92vh;overflow:auto;padding:clamp(18px,3vw,30px);position:relative}
+.ud{display:grid;grid-template-columns:1.15fr 1fr;gap:24px}.ud img{width:100%;border-radius:12px;background:#fff}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:start;vertical-align:middle}th{color:var(--mut);font-weight:600}
+td.n,th.n{text-align:end;font-variant-numeric:tabular-nums;white-space:nowrap}
+#admin{display:none;background:#0d111b;border-top:1px solid var(--amb)}
+.atabs{display:flex;gap:6px;flex-wrap:wrap;margin:20px 0}.atabs button{border:1px solid var(--line);background:var(--bg2);border-radius:99px;padding:8px 18px;min-height:42px;font-weight:600;cursor:pointer}
+.atabs button[aria-selected=true]{background:#fff;color:#0b0d12}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.kpi{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:14px 16px}.kpi b{display:block;font:600 clamp(22px,2.6vw,28px) Poppins;white-space:nowrap}.kpi span{font-size:13px;color:var(--mut)}
+.bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;display:flex;margin-top:10px}.bar i{display:block;height:100%}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:16px;margin-top:16px}
+label{display:block;font-size:14px;color:var(--mut);margin-bottom:10px}
+input,select,textarea{display:block;width:100%;margin-top:4px;font:16px "IBM Plex Sans Arabic";padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#0a0d15;color:var(--ink);min-height:44px}
+td input{margin:0;min-height:38px;padding:5px 8px}
+.f2{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0 14px}
+.scroll{overflow-x:auto}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:#fff;color:#0b0d12;padding:10px 18px;border-radius:99px;z-index:60;display:none;font-weight:600}
+@media(max-width:760px){.scard{bottom:auto;top:120px;width:200px;inset-inline-end:auto;inset-inline-start:16px}.fplane{max-width:84vw}.hero{inset-inline:0;max-width:none;bottom:0;padding:140px 18px 22px;background:linear-gradient(180deg,transparent,rgba(6,8,13,.9) 42%)}.hero h1{font-size:64px}.hero p{font-size:15px;margin:6px 0 16px}body.intro .rail{display:none}.tabs button{padding:6px 11px}.top{gap:8px}.top .pill.w{display:none}.rail{top:auto;bottom:118px;transform:none}.rail button{width:40px;height:30px;font-size:12px}
+.hero{bottom:24px}.stats{margin-top:18px}.lvlname{top:118px}.side{top:auto;bottom:0;inset-inline:0;width:auto;max-height:78%;border-radius:20px 20px 0 0;transform:translateY(105%)!important}.side.on{transform:none!important}.ud{grid-template-columns:1fr}.hc{width:200px}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;color:var(--mut)}.stack td:empty{display:none}}
+@media(min-width:761px){#exp.so .dock{inset-inline-start:420px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+
+<script src="assets/supabase.js"></script>
+<meta name="robots" content="noindex,nofollow">
+</head>
+<body>
+<section id="exp" aria-label="استكشاف المبنى">
+  <div id="stage">
+    <div class="view on" id="vExt"><svg id="extSvg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" aria-label="واجهة المبنى، اختر دورًا"><defs><linearGradient id="fadeL" x1="0" x2="1"><stop offset="0" stop-color="#05070c"/><stop offset=".7" stop-color="#05070c"/><stop offset="1" stop-color="#05070c" stop-opacity="0"/></linearGradient></defs><image href="assets/ext-night.jpg" width="1920" height="1080"/><rect x="-700" y="0" width="900" height="1080" fill="url(#fadeL)"/><g id="bandG"></g><g id="shopG"></g></svg><video id="extVid" muted playsinline preload="auto"></video></div>
+    <div class="view" id="vFloor"><div class="fwrap"><div class="fplane" id="fplane"><svg id="flSvg" viewBox="0 0 1744 2336"><image href="assets/floor-3d.webp" width="1744" height="2336"/><g id="zoneG"></g></svg></div></div><p class="fnote">تصور ثلاثي الأبعاد مبني على مخطط الدور المعتمد · الأثاث للتوضيح</p></div>
+    <div class="view" id="vPhoto"><video id="phVid" muted loop playsinline preload="none"></video></div>
+  </div>
+  <div id="pins"></div><div class="tip" id="tip"></div><div class="btip" id="btip"></div>
+  <div class="top">
+    <div class="brand"><b>إيفارا</b><small>EVARA RESIDENCES</small></div>
+    <div class="tabs" role="group" aria-label="طريقة العرض">
+      <button data-mode="intro" aria-pressed="true">المبنى</button><button data-mode="homes" aria-pressed="false">المنازل</button><button data-mode="roof" aria-pressed="false">السطح</button><button data-mode="street" aria-pressed="false">الشارع</button>
+    </div>
+    <button class="pill" id="langBtn" aria-label="Switch to English" data-raw>EN</button><a class="pill w" href="#contact">تواصل معنا</a>
+  </div>
+  <div class="rail" id="rail" aria-label="الأدوار"></div>
+  <div class="hero" id="hero">
+    <h1 id="pName">إيفارا</h1>
+    <p>شقق بغرفة وغرفتين فوق واجهة محلات تجارية، مع بنتهاوس وسطح أخضر — المعبيلة، ولاية السيب. اختر دورًا وادخل إلى شقتك.</p>
+    <div class="row"><button class="pill w" id="pick">اختر منزلك</button><button class="pill" id="replay">شاهد الفيلم</button></div>
+    <div class="stats"><div><b>48</b><span>شقة على 8 أدوار</span></div><div><b id="sAv">—</b><span>متاحة الآن</span></div><div><b class="lat">42–79 m²</b><span>مساحات داخلية</span></div></div>
+  </div>
+  <div class="lvlname hidden-ui" id="lvl"><span class="mut" id="lvlSub"></span><b id="lvlT"></b></div>
+  <div class="dock hidden-ui" id="dock" aria-label="قائمة الوحدات"></div>
+  <aside class="side" id="side" aria-live="polite"></aside>
+  <div class="scard hidden-ui" id="scard"></div>
+    <div id="film">
+    <video id="vid" autoplay muted loop playsinline poster="assets/hf-poster.jpg"></video>
+    <div class="fx"><h1>إيفارا</h1><p>حياة فوق المعبيلة. من الغروب إلى أضواء الليل، من صالتك إلى السطح الأخضر.</p>
+      <div class="row"><button class="pill w" id="enter">ادخل إلى المبنى</button><a class="pill" href="#models">النماذج</a></div></div>
+  </div>
+</section>
+
+<section class="band" id="models"><div class="in">
+  <h2>ستة نماذج، تتكرر في كل دور</h2>
+  <p class="mut" style="margin-top:10px">مرر المؤشر على المخطط لرؤيته بالألوان الأصلية. المساحات صافية داخلية من المخطط، والشرفات منفصلة.</p>
+  <div class="models" id="mgrid"></div>
+</div></section>
+
+<section class="band" id="life" style="background:var(--bg2)"><div class="in">
+  <h2>الحياة في إيفارا</h2>
+  <p class="mut" style="margin-top:10px">صالة تطل على أضواء مسقط والجبال، غرف هادئة، ولوبي بفخامة الفنادق، وسطح أخضر للسهرات.</p>
+  <div class="life">
+    <figure class="lv big" data-film="walkthrough"><video data-src="assets/hf-walkthrough.mp4" muted loop playsinline preload="none" poster="assets/int-living2.jpg"></video><figcaption><b>الصالة</b><span>جولة داخل شقة غرفتين</span></figcaption></figure>
+    <figure class="lv" data-film="rooftop"><video data-src="assets/hf-rooftop.mp4" muted loop playsinline preload="none" poster="assets/int-roof.jpg"></video><figcaption><b>السطح الأخضر</b><span>لسكان المبنى</span></figcaption></figure>
+    <figure class="lv" data-zoom="assets/int-lobby.jpg"><img src="assets/int-lobby.jpg" alt="اللوبي" loading="lazy"><figcaption><b>اللوبي</b><span>مدخل بطابع فندقي</span></figcaption></figure>
+    <figure class="lv" data-zoom="assets/int-bedroom.jpg"><img src="assets/int-bedroom.jpg" alt="غرفة النوم" loading="lazy"><figcaption><b>غرفة النوم</b><span>هدوء وإضاءة دافئة</span></figcaption></figure>
+    <figure class="lv" data-zoom="assets/int-living1.jpg"><img src="assets/int-living1.jpg" alt="شقة غرفة" loading="lazy"><figcaption><b>شقة غرفة</b><span>مطبخ مفتوح وشرفة</span></figcaption></figure>
+    <figure class="lv" data-zoom="assets/int-bath.jpg" style="grid-column:1/-1"><img src="assets/int-bath.jpg" alt="الحمام" loading="lazy"><figcaption><b>الحمامات</b><span>حجر طبيعي ونحاس</span></figcaption></figure>
+  </div>
+  <p class="note" style="margin-top:14px">الصور والأفلام الداخلية تصورات توضيحية لمستوى التشطيب وقد تختلف عن التسليم النهائي.</p>
+</div></section>
+
+<section class="band" id="gallery"><div class="in">
+  <h2>الواجهة من الغروب إلى الليل</h2>
+  <video data-src="assets/hf-night-drone.mp4" muted loop playsinline preload="none" poster="assets/hf-poster.jpg" style="width:100%;border-radius:18px;margin-top:24px;display:block;aspect-ratio:16/9;object-fit:cover;background:#000"></video>
+  <div class="gal" id="gal" tabindex="0"><img src="assets/render-1.jpg" alt="الواجهة الأمامية"><img src="assets/render-2.jpg" alt="منظور جانبي"><img src="assets/render-3.jpg" alt="الواجهة الخلفية"></div>
+  <div class="row" style="margin-top:14px"><button class="pill sm" data-g="-1">السابق</button><button class="pill sm" data-g="1">التالي</button></div>
+</div></section>
+
+<section class="band" id="contact"><div class="in">
+  <h2>احجز زيارتك</h2>
+  <div class="ct">
+    <div><h3>المبيعات</h3><p class="mut">اتصل أو راسلنا على واتساب لموعد معاينة.</p><p id="cPhone" dir="ltr" style="text-align:end;font:600 22px Poppins">—</p><a class="pill w" id="cWa" href="#contact">واتساب</a></div>
+    <div><h3>الموقع</h3><p class="mut" id="cAddr">المعبيلة، ولاية السيب، مسقط</p><a class="pill" id="cMap" href="https://maps.google.com/?q=Al+Maabilah+Seeb+Muscat">فتح الخريطة</a></div>
+    <div><h3>المطور والتسويق</h3><p class="mut" id="cDev">تسويق حصري: شركة الزاد العقارية</p><p class="mut" id="cHand"></p></div>
+  </div>
+  <p class="note" style="margin-top:22px">المساحات المعروضة صافية من المخططات ولا تمثل المساحة البيعية المسجلة. الصور والمخطط ثلاثي الأبعاد للتوضيح وقد تختلف التشطيبات النهائية.</p>
+</div></section>
+
+<section class="band" id="admin"><div class="in">
+  <h2>مكتب المبيعات</h2>
+  <p class="mut" style="margin-top:8px">للموظفين فقط. أي تعديل هنا يظهر فورًا للفريق، وتتغير ألوان الوحدات في المبنى للعملاء.</p>
+  <div id="authBox" class="card"></div><div id="adminUI" hidden><div class="atabs" role="tablist"><button data-t="sum" aria-selected="true">الملخص</button><button data-t="inv" aria-selected="false">الوحدات والأسعار</button><button data-t="pay" aria-selected="false">الدفعات</button><button data-t="set" aria-selected="false">إعدادات الموقع</button><button data-t="stf" aria-selected="false" id="stfTab" hidden>الموظفون</button></div>
+  <div id="tab-sum"></div><div id="tab-inv" hidden></div><div id="tab-pay" hidden></div><div id="tab-set" hidden></div><div id="tab-stf" hidden></div></div>
+</div></section>
+<footer><div class="in row" style="justify-content:space-between"><span>إيفارا ريزيدنس — المعبيلة · تسويق شركة الزاد العقارية</span><a href="#admin" style="color:var(--mut)">دخول الموظفين</a></div></footer>
+
+<div class="mod" id="mod" role="dialog" aria-modal="true"><div class="box"><button class="x" aria-label="إغلاق" id="mx">×</button><div id="mbody"></div></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+{
+/* ================= data ================= */
+const EN={"إيفارا ريزيدنس — المعبيلة · تسويق شركة الزاد العقارية": "EVARA Residences — Al Maabilah · Marketed by AlZad Real Estate", "إيفارا ريزيدنس — المعبيلة": "EVARA Residences — Al Maabilah", "في إيفارا ريزيدنس — المعبيلة": "at EVARA Residences, Al Maabilah", "مرحبًا، أرغب بمعرفة تفاصيل مشروع إيفارا ريزيدنس": "Hello, I would like to know more about EVARA Residences", "إيفارا ريزيدنس": "EVARA Residences", "إيفارا": "EVARA", "استكشاف المبنى": "Explore the building", "واجهة المبنى، اختر دورًا": "Building facade, choose a floor", "تصور ثلاثي الأبعاد مبني على مخطط الدور المعتمد · الأثاث للتوضيح": "3D visualisation based on the approved floor plan · furniture is illustrative", "طريقة العرض": "View", "المبنى": "Building", "المنازل": "Homes", "السطح": "Rooftop", "الشارع": "Street", "تواصل معنا": "Contact us", "الأدوار": "Floors", "شقق بغرفة وغرفتين فوق واجهة محلات تجارية، مع بنتهاوس وسطح أخضر — المعبيلة، ولاية السيب. اختر دورًا وادخل إلى شقتك": "One- and two-bedroom homes above a retail frontage, with a penthouse and a green rooftop — Al Maabilah, Seeb. Choose a floor and step into your home", "اختر منزلك": "Find your home", "شاهد الفيلم": "Watch the film", "شقة على 8 أدوار": "homes on 8 floors", "متاحة الآن": "available now", "مساحات داخلية": "internal areas", "قائمة الوحدات": "Unit list", "حياة فوق المعبيلة. من الغروب إلى أضواء الليل، من صالتك إلى السطح الأخضر": "Life above Al Maabilah. From sunset to city lights, from your living room to the green rooftop", "ادخل إلى المبنى": "Enter the building", "النماذج": "Floor plans", "ستة نماذج، تتكرر في كل دور": "Six layouts, repeated on every floor", "مرر المؤشر على المخطط لرؤيته بالألوان الأصلية. المساحات صافية داخلية من المخطط، والشرفات منفصلة": "Hover a plan to see it in its original colours. Areas are net internal areas from the plan; balconies are listed separately", "الحياة في إيفارا": "Life at EVARA", "صالة تطل على أضواء مسقط والجبال، غرف هادئة، ولوبي بفخامة الفنادق، وسطح أخضر للسهرات": "Living rooms facing Muscat's lights and mountains, calm bedrooms, a hotel-style lobby and a green rooftop for evenings", "الصالة": "Living room", "جولة داخل شقة غرفتين": "Walkthrough of a two-bedroom home", "السطح الأخضر": "Green rooftop", "لسكان المبنى": "for residents", "اللوبي والواجهة التجارية": "Lobby & retail frontage", "اللوبي": "Lobby", "مدخل بطابع فندقي": "A hotel-style entrance", "غرفة النوم": "Bedroom", "هدوء وإضاءة دافئة": "Calm, warm lighting", "مطبخ مفتوح وشرفة": "Open kitchen and balcony", "الحمامات": "Bathrooms", "الحمام": "Bathroom", "حجر طبيعي ونحاس": "Natural stone and brass", "الصور والأفلام الداخلية تصورات توضيحية لمستوى التشطيب وقد تختلف عن التسليم النهائي": "Interior images and films are illustrative of the finish level and may differ from final handover", "الواجهة من الغروب إلى الليل": "The facade from sunset to night", "الواجهة الأمامية": "Front facade", "منظور جانبي": "Side view", "الواجهة الخلفية": "Rear facade", "السابق": "Previous", "التالي": "Next", "احجز زيارتك": "Book your visit", "المبيعات": "Sales", "اتصل أو راسلنا على واتساب لموعد معاينة": "Call or message us on WhatsApp to book a viewing", "واتساب": "WhatsApp", "الموقع": "Location", "المعبيلة، ولاية السيب، مسقط": "Al Maabilah, Seeb, Muscat", "فتح الخريطة": "Open map", "المطور والتسويق": "Developer & marketing", "تسويق حصري: شركة الزاد العقارية": "Exclusive marketing: AlZad Real Estate", "المساحات المعروضة صافية من المخططات ولا تمثل المساحة البيعية المسجلة. الصور والمخطط ثلاثي الأبعاد للتوضيح وقد تختلف التشطيبات النهائية": "Areas shown are net areas from the plans and are not the registered saleable area. Images and the 3D plan are illustrative; final finishes may differ", "مكتب المبيعات": "Sales office", "للموظفين فقط. أي تعديل هنا يظهر فورًا للفريق، وتتغير ألوان الوحدات في المبنى للعملاء": "Staff only. Changes here appear instantly for the team, and unit colours update for buyers", "الملخص": "Summary", "الوحدات والأسعار": "Units & prices", "الدفعات": "Payments", "إعدادات الموقع": "Site settings", "إغلاق": "Close", "صالة معيشة": "Living room", "مطبخ": "Kitchen", "غرفة نوم 1": "Bedroom 1", "غرفة نوم 2": "Bedroom 2", "غرفة نوم واحدة": "One bedroom", "غرفة نوم": "Bedroom", "دورة مياه": "WC", "حمام": "Bath", "3 شرفات": "3 balconies", "شرفات": "balconies", "شرفتان": "2 balconies", "غير محدثة": "Not updated", "متاحة": "Available", "محجوزة": "Reserved", "مباعة": "Sold", "الأرضي": "Ground", "البنتهاوس والسطح": "Penthouse & rooftop", "البنتهاوس": "Penthouse", "الدور": "Level", "ر.ع": "OMR", "م²": "m²", "محل تجاري (الأرضي)": "Shop (ground floor)", "محل تجاري": "Shop", "بنتهاوس": "Penthouse", "شقة غرفتين": "Two-bedroom home", "شقة غرفة": "One-bedroom home", "شقة": "Apartment", "محل": "Shop", "غرفتا نوم": "2 bedrooms", "غرف": "bedrooms", "تم البيع": "Sold", "السعر عند الطلب": "Price on request", "نموذج": "Model", "جلسات تحت العريشة وإطلالة على المدينة والجبال — اضغط لصورة أكبر": "Seating under the pergola with city and mountain views — tap to enlarge", "مدخل سكني بطابع فندقي ومحلات على الشارع": "A hotel-style residential entrance with shops on the street", "وحدات البنتهاوس تُعلن قريبًا — تواصل مع المبيعات للحجز المبكر": "Penthouse units will be released soon — contact sales for early reservation", "تُعلن وحداته قريبًا": "Units to be released soon", "تُعلن قريبًا": "Coming soon", "محلات تجارية ولوبي": "Shops and lobby", "من": "of", "شقق": "homes", "وحدات": "units", "الواجهة التجارية": "Retail frontage", "المحلات تُعرض هنا فور إضافتها من لوحة الإدارة": "Shops appear here once added from the admin panel", "مرحبًا، أستفسر عن": "Hello, I'm enquiring about", "رقم": "no.", "تصور داخلي": "Interior visualisation", "جولة داخل الشقة": "Walk through the home", "المساحة الداخلية": "Internal area", "الشرفات": "Balconies", "الغرف": "Bedrooms", "السعر": "Price", "احجز اتصالًا": "Book a call", "ادخل الشقة": "Enter the home", "تعديل البيع": "Edit sale", "تسجيل حجز / بيع": "Record reservation / sale", "المخطط": "Plan", "الصور الداخلية تصور توضيحي للتشطيبات": "Interior images illustrate the finishes", "مخطط النموذج": "Plan of model", "مخطط": "Plan", "الداخلي الصافي": "Net internal", "مساحات صافية مقاسة من المخطط، ليست المساحة البيعية": "Net areas measured from the plan, not the saleable area", "النموذج": "Model", "داخلي": "Internal", "المتاح": "Available", "يُضاف من الإعدادات": "Set in settings", "التسليم المتوقع": "Expected handover", "الوحدات": "Units", "قيمة العقود": "Contract value", "المحصّل": "Collected", "المتبقي على المشترين": "Outstanding from buyers", "قيمة المتاح بسعر القائمة": "Available stock at list price", "المشترون والأرصدة": "Buyers & balances", "نسخ الجدول": "Copy table", "الوحدة": "Unit", "الحالة": "Status", "اسم المشتري": "Buyer name", "المشتري": "Buyer", "الهاتف": "Phone", "سعر البيع المتفق (ر.ع)": "Agreed sale price (OMR)", "سعر البيع": "Sale price", "المدفوع حتى الآن": "Paid so far", "المدفوع": "Paid", "المتبقي": "Balance", "التاريخ": "Date", "لا توجد حجوزات أو مبيعات بعد. افتح": "No reservations or sales yet. Open", "وسجّل أول عملية": "and record the first one", "بحث": "Search", "رقم الوحدة أو اسم المشتري": "Unit number or buyer name", "إضافة محل / بنتهاوس": "Add shop / penthouse", "سعر القائمة يظهر للعملاء، ويُحفظ عند الخروج من الخانة": "The list price is shown to buyers and saves when you leave the field", "النوع": "Type", "المساحة م": "Area m", "المساحة": "Area", "سعر القائمة (ر.ع)": "List price (OMR)", "سعر القائمة": "List price", "سعر": "Price", "تعديل العملية": "Edit transaction", "تعديل": "Edit", "حجز / بيع": "Reserve / sell", "تأكيد الحذف": "Confirm delete", "حذف": "Delete", "تسجيل دفعة": "Record payment", "المبلغ (ر.ع)": "Amount (OMR)", "طريقة الدفع": "Payment method", "تحويل بنكي": "Bank transfer", "شيك": "Cheque", "نقدًا": "Cash", "بطاقة": "Card", "رقم المرجع / الإيصال": "Reference / receipt no.", "نوع الدفعة": "Payment type", "عربون حجز": "Reservation deposit", "دفعة مقدمة": "Down payment", "قسط": "Instalment", "دفعة التسليم": "Handover payment", "أخرى": "Other", "حفظ الدفعة": "Save payment", "سجّل حجزًا أو بيعًا أولًا، ثم أضف دفعاته هنا": "Record a reservation or sale first, then add its payments here", "سجل الدفعات": "Payment log", "عرض": "Show", "كل الوحدات": "All units", "مدفوع": "paid", "متبقٍ": "balance", "الطريقة": "Method", "المرجع": "Reference", "المبلغ": "Amount", "نسخ إيصال": "Copy receipt", "لا توجد دفعات": "No payments", "اسم المشروع": "Project name", "هاتف المبيعات": "Sales phone", "رقم واتساب (مع 968)": "WhatsApp number (with 968)", "العنوان": "Address", "رابط خرائط": "Map link", "المطور / التسويق": "Developer / marketing", "موعد التسليم المتوقع": "Expected handover", "مثال: الربع الرابع": "e.g. Q4", "حفظ الإعدادات": "Save settings", "تسجيل حجز أو بيع": "Record reservation or sale", "غير محدد": "not set", "تاريخ العقد / الحجز": "Contract / reservation date", "الموظف المسؤول": "Sales agent", "ملاحظات وخطة الدفع": "Notes & payment plan", "إلغاء العملية وإرجاع الوحدة متاحة": "Cancel and make the unit available again", "بيانات المشتري والدفعات لا تظهر للعملاء": "Buyer details and payments are never shown to the public", "تم الحفظ": "Saved", "تعذر الحفظ": "Couldn't save", "اضغط مرة أخرى للتأكيد (الدفعات تبقى في السجل)": "Click again to confirm (payments stay in the log)", "أُعيدت الوحدة متاحة": "Unit is available again", "تعذر الحذف": "Couldn't delete", "تعذر النسخ": "Couldn't copy", "تعذر": "Failed", "إضافة وحدة": "Add unit", "رقم الوحدة": "Unit number", "أو": "or", "عدد الغرف (للبنتهاوس)": "Bedrooms (penthouse)", "وصف قصير يظهر للعميل": "Short description shown to buyers", "إضافة": "Add", "هذا الرقم مستخدم": "That number is already used", "أُضيفت الوحدة": "Unit added", "تأكيد": "Confirm", "حُذفت الدفعة": "Payment deleted", "حُذفت": "Deleted", "إيصال استلام": "Payment receipt", "استلمنا من": "Received from", "مبلغ": "Amount", "عن": "for", "مرجع": "ref.", "نُسخ الإيصال": "Receipt copied", "نُسخ الجدول — الصقه في": "Table copied — paste it into", "حُفظ سعر": "Price saved for", "سُجلت الدفعة": "Payment recorded", "رابط الخريطة يجب أن يبدأ بـ": "The map link must start with", "حُفظت الإعدادات": "Settings saved", "المحلات": "Shops", "دخول الموظفين": "Staff sign-in", "تسجيل الخروج": "Sign out", "مدير": "Manager", "موظف": "Staff", "موظف مبيعات": "Sales staff", "هذا الحساب غير مصرح له بالدخول إلى مكتب المبيعات.": "This account is not authorised for the sales office.", "البريد الإلكتروني": "Email", "كلمة المرور": "Password", "دخول": "Sign in", "نسيت كلمة المرور؟ اطلب من المدير تعيين كلمة جديدة لك.": "Forgot your password? Ask the manager to set a new one.", "إنشاء حساب المدير": "Create manager account", "أول خطوة: أنشئ حساب المدير. بعدها يضيف المدير الموظفين من تبويب": "First step: create the manager account. The manager then adds staff from the tab", "الموظفون": "Staff", "كلمة المرور (8 أحرف على الأقل)": "Password (at least 8 characters)", "تأكيد كلمة المرور": "Confirm password", "إنشاء الحساب": "Create account", "إضافة موظف": "Add staff member", "كلمة مرور مؤقتة (8 أحرف على الأقل)": "Temporary password (at least 8 characters)", "الصلاحية": "Role", "أعطِ الموظف بريده وكلمة المرور المؤقتة، ويدخل من صفحة الموقع ثم": "Give the staff member their email and temporary password; they sign in on the site at", "فريق المبيعات": "Sales team", "كلمة مرور جديدة": "New password", "كلمة المرور الجديدة": "New password", "البريد أو كلمة المرور غير صحيحة": "Wrong email or password", "كلمتا المرور غير متطابقتين": "Passwords don't match", "تم إنشاء حساب المدير": "Manager account created", "أُضيف الموظف": "Staff member added", "8 أحرف على الأقل": "At least 8 characters", "تم تعيين كلمة المرور": "Password set", "حُذف الموظف": "Staff member removed"};
+const ENRE=new RegExp('(?<![\\u0600-\\u06FF])('+Object.keys(EN).sort((a,b)=>b.length-a.length).map(k=>k.replace(/[.*+?^${}()|[\]\\\/]/g,'\\$&')).join('|')+')(?![\\u0600-\\u06FF])','g');
+let LANG='ar';try{LANG=localStorage.getItem('evara-lang')||'ar'}catch(e){}
+const tr=s=>LANG==='en'&&s?String(s).replace(ENRE,m=>EN[m]||m):s;
+
+const MODELS=[
+ {n:1,beds:2,bath:2,wc:1,int:75.94,bal:7.80,rooms:[['صالة معيشة',25.79],['مطبخ',6.31],['غرفة نوم 1',19.38],['غرفة نوم 2',14.99],['حمام',3.55],['حمام',3.10],['دورة مياه',2.81],['3 شرفات',7.80]]},
+ {n:2,beds:2,bath:2,wc:1,int:78.77,bal:7.91,rooms:[['صالة معيشة',26.60],['مطبخ',7.20],['غرفة نوم 1',18.03],['غرفة نوم 2',14.63],['حمام',5.63],['حمام',4.19],['دورة مياه',2.50],['3 شرفات',7.91]]},
+ {n:3,beds:1,bath:1,wc:1,int:50.43,bal:5.15,rooms:[['صالة معيشة',21.90],['مطبخ',5.00],['غرفة نوم',17.13],['حمام',4.24],['دورة مياه',2.16],['3 شرفات',5.15]]},
+ {n:4,beds:1,bath:1,wc:1,int:49.26,bal:5.44,rooms:[['صالة معيشة',21.60],['مطبخ',5.00],['غرفة نوم',16.31],['حمام',3.23],['دورة مياه',3.12],['شرفتان',5.44]]},
+ {n:5,beds:1,bath:1,wc:1,int:49.13,bal:5.03,rooms:[['صالة معيشة',21.78],['مطبخ',5.60],['غرفة نوم',15.55],['حمام',4.00],['دورة مياه',2.21],['3 شرفات',5.03]]},
+ {n:6,beds:1,bath:1,wc:1,int:42.49,bal:4.18,rooms:[['صالة معيشة',17.64],['مطبخ',5.20],['غرفة نوم',13.49],['حمام',4.00],['دورة مياه',2.16],['3 شرفات',4.18]]}];
+/* flat zones in plan metres [x0,y0,x1,y1], traced from the first-floor CAD */
+const ZONES={1:[[11.04,14.94,21.0,24.33],[9.96,21.37,12.99,24.33]],2:[[0,16.33,9.96,24.33],[0,13.56,9.67,16.33],[9.67,14.94,11.04,16.33]],
+ 3:[[0,6.64,9.67,13.36]],4:[[0,-0.08,9.67,6.64]],6:[[11.23,6.35,21.0,12.97]],5:[[10.74,-0.08,21.0,6.35]]};
+const CX=10.4,CY=12.1,FLOORS=8;
+const LEVELS=['PH','8','7','6','5','4','3','2','1','G'];
+const LIDX=l=>l==='G'?0:l==='PH'?9:+l;
+const FLH=i=>i===0?0.15:i===10?35.25:4.65+3.4*(i-1);
+const ST={available:'متاحة',reserved:'محجوزة',sold:'مباعة',unknown:'غير محدثة'};
+const SCOL={available:'#3fb37a',reserved:'#e8a72a',sold:'#d9574a',unknown:'#7f8592'};
+const LV=f=>f==='G'?'الأرضي':f==='PH'?'البنتهاوس':'الدور '+f;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const x=parseFloat(v);return isFinite(x)?x:0};
+const omr=v=>num(v).toLocaleString('en-US',{maximumFractionDigits:3})+' ر.ع';
+const $=id=>document.getElementById(id);
+let db=null,user=null,admin=false,uid=null,loaded=false,U={},S={},P=[],CFG={};
+let mode='intro',level=null,selUnit=null;
+const base=[];for(let f=1;f<=FLOORS;f++)for(const m of MODELS)base.push({code:`${f}0${m.n}`,floor:String(f),model:m.n,kind:'apt'});
+function units(){const out=base.map(b=>({...(U[b.code]||{}),...b}));
+  for(const [c,d] of Object.entries(U))if(d.custom)out.push({...d,code:c});
+  for(const u of out)u.status=loaded?(['reserved','sold'].includes(u.status)?u.status:'available'):'unknown';return out}
+const mdl=u=>MODELS.find(m=>m.n===Number(u.model));
+const kindName=u=>u.kind==='shop'?'محل تجاري':u.kind==='ph'?'بنتهاوس':'شقة';
+const area=u=>{const m=mdl(u);return m?m.int:num(u.area)};
+const bedTxt=u=>{const m=mdl(u);const b=m?m.beds:num(u.beds);return u.kind==='shop'?'محل':b===2?'غرفتا نوم':b===1?'غرفة نوم واحدة':b?b+' غرف':'—'};
+const priceTxt=u=>u.status==='sold'?'تم البيع':num(u.price)>0?omr(u.price):'السعر عند الطلب';
+const title=u=>{const m=mdl(u);return m?(m.beds===2?'شقة غرفتين':'شقة غرفة')+' — نموذج '+m.n:kindName(u)};
+const img=u=>{const m=mdl(u);return m?`assets/plan-0${m.n}.jpg`:'assets/render-1.jpg'};
+const photo=u=>{const m=mdl(u);if(u.kind==='shop')return 'assets/int-lobby.jpg';if(u.kind==='ph')return 'assets/int-roof.jpg';return m&&m.beds===2?'assets/int-living2.jpg':'assets/int-living1.jpg'};
+function toast(t){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display='none',2600)}
+function wa(t){t=tr(t);const n=String(CFG.whatsapp||'').replace(/\D/g,'');return n?'https://wa.me/'+n+'?text='+encodeURIComponent(t):'#contact'}
+
+/* ================= explorer (photoreal) ================= */
+const BANDS={"1": [[648, 884], [962, 858], [1268, 867], [1268, 948], [962, 945], [648, 955]], "2": [[648, 812], [962, 771], [1268, 785], [1268, 867], [962, 858], [648, 884]], "3": [[648, 741], [962, 684], [1268, 703], [1268, 785], [962, 771], [648, 812]], "4": [[648, 670], [962, 597], [1268, 621], [1268, 703], [962, 684], [648, 741]], "5": [[648, 598], [962, 510], [1268, 539], [1268, 621], [962, 597], [648, 670]], "6": [[648, 527], [962, 423], [1268, 458], [1268, 539], [962, 510], [648, 598]], "7": [[648, 456], [962, 336], [1268, 376], [1268, 458], [962, 423], [648, 527]], "8": [[648, 384], [962, 249], [1268, 294], [1268, 376], [962, 336], [648, 456]], "PH": [[648, 313], [962, 162], [1268, 212], [1268, 294], [962, 249], [648, 384]], "G": [[648, 955], [962, 945], [1268, 948], [1268, 1040], [962, 1042], [648, 1035]]};
+const FZ={"1": [[836, 51], [1682, 51], [1682, 806], [1234, 806], [1234, 923], [895, 923], [895, 806], [836, 806]], "2": [[47, 432], [252, 234], [404, 51], [836, 51], [836, 806], [755, 806], [755, 907], [47, 907]], "3": [[47, 907], [755, 907], [755, 1530], [47, 1530]], "4": [[47, 1530], [755, 1530], [755, 2138], [47, 2138]], "6": [[1187, 923], [1682, 923], [1682, 1507], [895, 1507], [895, 1117], [1187, 1117]], "5": [[895, 1507], [1682, 1507], [1682, 2138], [895, 2138]]};
+const VB={full:[0,0,1920,1080],street:[600,700,760,380],ph:[600,40,760,420]};
+let vbCur=[...VB.full],vbAnim=null,entered=false;
+function vbFor(k){const r=$('exp').getBoundingClientRect(),asp=r.width/r.height;let v=[...VB[k]];$('extSvg').setAttribute('preserveAspectRatio',asp<1&&k==='full'?'xMidYMin meet':'xMidYMid slice');if(k==='full'&&asp<1){v=[600,40,700,1030]}else if(k==='full'&&LANG==='en'&&asp>1.15){v=[-240,0,1920,1080]}if(k==='street'&&asp<1){v=[700,620,560,460]}return v}
+function setVB(t,ms=1200){const from=[...vbCur],t0=performance.now();cancelAnimationFrame(vbAnim);const step=n=>{const k=Math.min(1,(n-t0)/ms),e=k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;vbCur=from.map((x,i)=>x+(t[i]-x)*e);$('extSvg').setAttribute('viewBox',vbCur.join(' '));placePins();if(k<1)vbAnim=requestAnimationFrame(step)};vbAnim=requestAnimationFrame(step)}
+function avOf(l){return units().filter(u=>u.floor===l&&u.status==='available').length}
+function drawBands(){$('bandG').innerHTML=Object.entries(BANDS).map(([l,pts])=>`<polygon class="fband${l===level&&mode==='homes'?' sel':''}" data-lv="${l}" tabindex="0" role="button" aria-label="${LV(l)}" points="${pts.map(p=>p.join(',')).join(' ')}"/>`).join('')}
+function drawZones(){if(!level||mode!=='homes'){$('zoneG').innerHTML='';return}
+  const us=units().filter(u=>u.floor===level&&mdl(u));
+  $('zoneG').innerHTML=us.map(u=>{const c=SCOL[u.status],z=FZ[u.model];return `<polygon class="zone${u.code===selUnit?' sel':''}${match(u)?'':' dim'}" data-u="${esc(u.code)}" fill="${c}" stroke="${c}" points="${z.map(p=>p.join(',')).join(' ')}"/>`}).join('')}
+const match=u=>true;
+function markSel(){document.querySelectorAll('.zone').forEach(z=>z.classList.toggle('sel',z.dataset.u===selUnit));document.querySelectorAll('.pin').forEach(p=>p.classList.toggle('on',p.dataset.u===selUnit))}
+let pins=[];
+function buildPins(){const box=$('pins');box.innerHTML='';pins=[];let list=[];
+  if(mode==='homes'&&level)list=units().filter(u=>u.floor===level&&mdl(u)).map(u=>{const z=FZ[u.model];const xs=z.map(p=>p[0]),ys=z.map(p=>p[1]);return {u,svg:'flSvg',x:(Math.min(...xs)+Math.max(...xs))/2,y:(Math.min(...ys)+Math.max(...ys))/2}});
+  if(mode==='street'){const sh=units().filter(u=>u.floor==='G');list=sh.map((u,i)=>({u,svg:'extSvg',x:1010+(240/Math.max(sh.length,1))*(i+.5),y:990}))}
+  for(const it of list){const u=it.u,e=document.createElement('button');e.className='pin';e.textContent=u.code;e.style.setProperty('--c',SCOL[u.status]);e.dataset.u=u.code;e.setAttribute('aria-label',`${title(u)} ${u.code} ${ST[u.status]}`);
+    e.onmouseenter=()=>showTip(u,e);e.onmouseleave=()=>$('tip').style.opacity=0;box.appendChild(e);pins.push({e,...it})}
+  placePins();setTimeout(placePins,700);setTimeout(placePins,1300)}
+function placePins(){const er=$('exp').getBoundingClientRect();for(const p of pins){const svg=$(p.svg),m=svg.getScreenCTM();if(!m){continue}const pt=svg.createSVGPoint();pt.x=p.x;pt.y=p.y;const q=pt.matrixTransform(m);p.e.style.left=(q.x-er.left)+'px';p.e.style.top=(q.y-er.top)+'px'}}
+/* floor plane is CSS-tilted: getScreenCTM ignores 3D transforms, so measure a probe instead */
+function placeFloorPins(){const er=$('exp').getBoundingClientRect();for(const p of pins){if(p.svg!=='flSvg')continue;let c=$('probe-'+p.u.code);if(!c){c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.id='probe-'+p.u.code;c.setAttribute('r','2');c.setAttribute('fill','none');$('zoneG').appendChild(c)}c.setAttribute('cx',p.x);c.setAttribute('cy',p.y);const b=c.getBoundingClientRect();p.e.style.left=(b.left+b.width/2-er.left)+'px';p.e.style.top=(b.top+b.height/2-er.top)+'px'}}
+const _pp=placePins;placePins=function(){_pp();if(mode==='homes')placeFloorPins()};
+function showView(id){for(const v of ['vExt','vFloor','vPhoto'])$(v).classList.toggle('on',v===id)}
+function setMode(m,lv){
+  const prev=mode;mode=m;document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===m||(b.dataset.mode==='homes'&&m==='ph')));
+  const intro=m==='intro';document.body.classList.toggle('intro',intro);$('hero').classList.toggle('hidden-ui',!intro);
+  $('lvl').classList.toggle('hidden-ui',!(m==='homes'||m==='ph'));$('dock').classList.toggle('hidden-ui',m==='intro'||m==='roof');
+  level=m==='homes'?(lv||level||bestFloor()):m==='ph'?'PH':m==='street'?'G':null;
+  closeSide();$('btip').style.opacity=0;
+  {const c=$('scard');c.classList.toggle('hidden-ui',m!=='roof'&&m!=='street'&&m!=='ph');
+   if(m==='roof'){c.dataset.film='rooftop';delete c.dataset.zoom;c.innerHTML='<img src="assets/int-roof.jpg" alt=""><div><b>السطح الأخضر</b><span class="mut">جلسات تحت العريشة وإطلالة على المدينة والجبال — اضغط لصورة أكبر</span></div>';c.dataset.zoom='assets/int-roof.jpg';delete c.dataset.film}
+   else if(m==='street'){c.dataset.zoom='assets/int-lobby.jpg';delete c.dataset.film;c.innerHTML='<img src="assets/int-lobby.jpg" alt="اللوبي"><div><b>اللوبي والواجهة التجارية</b><span class="mut">مدخل سكني بطابع فندقي ومحلات على الشارع</span></div>'}
+   else if(m==='ph'){c.dataset.zoom='assets/int-roof.jpg';delete c.dataset.film;c.innerHTML='<img src="assets/int-roof.jpg" alt=""><div><b>البنتهاوس والسطح</b><span class="mut">وحدات البنتهاوس تُعلن قريبًا — تواصل مع المبيعات للحجز المبكر</span></div>'}}
+  const ph=$('phVid');
+  if(m==='intro'){showView('vExt');$('vExt').classList.remove('zoom');setVB(vbFor('full'))}
+  if(m==='street'){showView('vExt');$('vExt').classList.remove('zoom');setVB(vbFor('street'))}
+  if(m==='ph'){showView('vExt');$('vExt').classList.remove('zoom');setVB(vbFor('ph'))}
+  if(m==='homes'){if(prev==='intro'||prev==='street'||prev==='ph'){$('vExt').classList.add('zoom')}showView('vFloor')}
+  else $('vExt').classList.remove('zoom');
+  if(m==='roof'){showView('vPhoto');if(!ph.src)ph.src='assets/hf-rooftop.mp4';ph.play().catch(()=>{})}else ph.pause();
+  drawBands();drawZones();buildPins();renderDock();renderLevel();renderRail();
+}
+function showTip(u,e){const t=$('tip');t.innerHTML=`<img src="${photo(u)}" alt=""><div><b>${esc(u.code)} · ${esc(title(u))}</b><div class="mut">${area(u)?area(u).toFixed(1)+' م² · ':''}${ST[u.status]}</div></div>`;
+  const r=e.getBoundingClientRect(),x=$('exp').getBoundingClientRect();t.style.left=Math.min(x.width-220,Math.max(8,r.left-x.left-80))+'px';t.style.top=Math.max(60,r.top-x.top-190)+'px';t.style.opacity=1}
+
+function bandTip(e){const t=e.target.closest('.fband');const b=$('btip');if(!t){b.style.opacity=0;return}const l=t.dataset.lv,n=units().filter(u=>u.floor===l).length,av=avOf(l);
+  b.innerHTML=`<b>${esc(LV(l))}</b>${l==='PH'?'تُعلن قريبًا':l==='G'?'محلات تجارية ولوبي':(loaded?av+' من '+n+' متاحة':n+' شقق')}`;const r=$('exp').getBoundingClientRect();b.style.left=(e.clientX-r.left+16)+'px';b.style.top=(e.clientY-r.top-18)+'px';b.style.opacity=1}
+function renderRail(){const us=units();$('rail').innerHTML=LEVELS.map(l=>{const av=us.some(u=>u.floor===l&&u.status==='available');return `<button data-lv="${l}" aria-pressed="${l===level}" aria-label="${LV(l)}">${l==='G'?'G':l==='PH'?'PH':'L'+l}${av&&loaded?'<i></i>':''}</button>`}).join('')}
+function renderLevel(){if(!level)return;const us=units().filter(u=>u.floor===level),av=us.filter(u=>u.status==='available').length;
+  $('lvlT').textContent=LV(level);$('lvlSub').textContent=us.length?(loaded?`${av} من ${us.length} متاحة`:`${us.length} وحدات`):'تُعلن وحداته قريبًا'}
+function renderDock(){let list=[];if(mode==='homes'&&level)list=units().filter(u=>u.floor===level);else if(mode==='street')list=units().filter(u=>u.floor==='G');else if(mode==='ph')list=units().filter(u=>u.floor==='PH');
+  $('dock').innerHTML=list.length?list.map(u=>`<button class="hc${u.code===selUnit?' on':''}" data-u="${esc(u.code)}"><b>${esc(u.code)}</b><span>${esc(title(u))}</span><span class="s">${area(u)?area(u).toFixed(1)+' م² · ':''}<span class="tag t-${u.status}">${ST[u.status]}</span></span></button>`).join(''):(mode==='street'?'<div class="hc" style="width:auto;display:block"><b style="font-size:18px">الواجهة التجارية</b><span class="s">المحلات تُعرض هنا فور إضافتها من لوحة الإدارة.</span></div>':'')}
+function bestFloor(){const us=units();for(const l of ['4','5','3','6','2','7','1','8']){if(us.some(u=>u.floor===l&&u.status==='available'))return l}return '4'}
+
+function openUnit(code){
+  const u=units().find(x=>x.code===code);if(!u)return;selUnit=code;
+  if(u.floor==='G'){if(mode!=='street')setMode('street')}else if(u.floor==='PH'){if(mode!=='ph')setMode('ph')}else if(mode!=='homes'||level!==u.floor)setMode('homes',u.floor);
+  const m=mdl(u),msg=`مرحبًا، أستفسر عن ${kindName(u)} رقم ${u.code} في إيفارا ريزيدنس — المعبيلة`;
+  $('side').innerHTML=`<button class="x" id="sx" aria-label="إغلاق">×</button><div style="position:relative"><img class="hero-img" src="${photo(u)}" alt="تصور داخلي" data-zoom="${photo(u)}" style="background:#111"><button class="pill sm" data-film="walkthrough" style="position:absolute;bottom:12px;inset-inline-start:12px">▶ جولة داخل الشقة</button></div>
+   <div class="b"><span class="mut lat" style="font-size:12px">HOME ${esc(u.code)} · ${esc(LV(u.floor))}</span><h3 style="font-size:24px;margin:4px 0 8px">${esc(title(u))}</h3><span class="tag t-${u.status}">${ST[u.status]}</span>
+   <div class="spec"><div><span>المساحة الداخلية</span><b>${area(u)?area(u).toFixed(2)+' م²':'—'}</b></div><div><span>الشرفات</span><b>${m?m.bal.toFixed(2)+' م²':'—'}</b></div><div><span>الغرف</span><b>${esc(bedTxt(u))}</b></div><div><span>الحمامات</span><b>${m?m.bath+' + دورة مياه':'—'}</b></div><div><span>الدور</span><b>${esc(LV(u.floor))}</b></div><div><span>السعر</span><b>${esc(priceTxt(u))}</b></div></div>
+   ${u.note?`<p class="mut">${esc(u.note)}</p>`:''}
+   <div class="row">${u.status!=='sold'?`<a class="pill w" style="flex:1" href="${esc(wa(msg))}">احجز اتصالًا</a>`:''}<button class="pill" data-full="${esc(u.code)}">ادخل الشقة</button></div>
+   ${admin?`<button class="pill sm" style="margin-top:10px" data-sell="${esc(u.code)}">${S[u.code]?'تعديل البيع':'تسجيل حجز / بيع'}</button>`:''}
+   <div class="thumbs"><img src="${img(u)}" alt="المخطط" data-full="${esc(u.code)}"><img src="assets/int-bedroom.jpg" alt="غرفة النوم" data-zoom="assets/int-bedroom.jpg"><img src="assets/int-bath.jpg" alt="الحمام" data-zoom="assets/int-bath.jpg"></div><p class="note" style="margin-top:10px">الصور الداخلية تصور توضيحي للتشطيبات.</p></div>`;
+  $('side').classList.add('on');$('exp').classList.add('so');renderDock();
+  markSel();
+}
+function closeSide(){$('side').classList.remove('on');$('exp').classList.remove('so');selUnit=null;markSel()}
+function fullUnit(code){const u=units().find(x=>x.code===code),m=mdl(u);
+  $('mbody').innerHTML=`<div class="ud"><img src="${img(u)}" alt="مخطط"><div><span class="tag t-${u.status}">${ST[u.status]}</span><h2 style="margin:8px 0 4px">${esc(u.code)} — ${esc(title(u))}</h2><p class="mut">${esc(LV(u.floor))}</p><table>${(m?m.rooms:[]).map(r=>`<tr><td>${r[0]}</td><td class="n">${r[1].toFixed(2)} م²</td></tr>`).join('')}<tr><th>الداخلي الصافي</th><th class="n">${area(u)?area(u).toFixed(2)+' م²':'—'}</th></tr></table><p class="note" style="margin-top:12px">مساحات صافية مقاسة من المخطط، ليست المساحة البيعية.</p></div></div>`;showMod()}
+function showMod(){$('mod').classList.add('on');$('mx').focus()}function hideMod(){$('mod').classList.remove('on');$('mbody').querySelectorAll('video').forEach(v=>v.pause())}
+
+/* ================= public sections ================= */
+function renderModels(){$('mgrid').innerHTML=MODELS.map(m=>{const av=units().filter(u=>u.model===m.n&&u.status==='available').length;return `<button class="mc" data-model="${m.n}"><img src="assets/plan-0${m.n}.jpg" alt="مخطط النموذج ${m.n}" loading="lazy"><div><h3>النموذج ${m.n}</h3><dl><dt>الغرف</dt><dd>${m.beds===2?'غرفتا نوم':'غرفة نوم'}</dd><dt>داخلي</dt><dd>${m.int.toFixed(2)} م²</dd><dt>شرفات</dt><dd>${m.bal.toFixed(2)} م²</dd><dt>المتاح</dt><dd>${loaded?av+' من 8':'8 شقق'}</dd></dl></div></button>`}).join('')}
+function renderContact(){if(CFG.name)$('pName').textContent=CFG.name;$('cPhone').textContent=CFG.phone||'يُضاف من الإعدادات';$('cWa').href=wa('مرحبًا، أرغب بمعرفة تفاصيل مشروع إيفارا ريزيدنس');
+  if(CFG.map&&/^https:\/\//.test(CFG.map))$('cMap').href=CFG.map;if(CFG.addr)$('cAddr').textContent=CFG.addr;if(CFG.dev)$('cDev').textContent=CFG.dev;$('cHand').textContent=CFG.handover?'التسليم المتوقع: '+CFG.handover:''}
+function refresh(){const us=units();$('sAv').textContent=loaded?us.filter(u=>u.status==='available').length:'—';renderRail();renderLevel();renderDock();drawZones();buildPins();renderModels();renderContact();if(selUnit&&$('side').classList.contains('on'))openUnit(selUnit);if(admin)renderAdmin()}
+
+/* ================= admin ================= */
+const paidOf=c=>P.filter(p=>p.unit===c).reduce((a,p)=>a+num(p.amount),0);
+function renderAdmin(){const t=document.querySelector('.atabs [aria-selected=true]').dataset.t;({sum:aSum,inv:aInv,pay:aPay,set:aSet,stf:aStf})[t]()}
+function aSum(){const us=units(),c=k=>us.filter(u=>u.status===k).length,tot=us.length,deals=Object.entries(S),contract=deals.reduce((a,[,s])=>a+num(s.price),0),col=P.reduce((a,p)=>a+num(p.amount),0),listAv=us.filter(u=>u.status==='available').reduce((a,u)=>a+num(u.price),0);
+  $('tab-sum').innerHTML=`<div class="kpis"><div class="kpi"><span>الوحدات</span><b>${tot}</b><div class="bar"><i style="width:${c('sold')/tot*100}%;background:var(--sd)"></i><i style="width:${c('reserved')/tot*100}%;background:var(--rs)"></i><i style="width:${c('available')/tot*100}%;background:var(--av)"></i></div><span>${c('sold')} مباعة · ${c('reserved')} محجوزة · ${c('available')} متاحة</span></div>
+  <div class="kpi"><span>قيمة العقود</span><b>${omr(contract)}</b></div><div class="kpi"><span>المحصّل</span><b style="color:var(--av)">${omr(col)}</b><div class="bar"><i style="width:${contract?Math.min(100,col/contract*100):0}%;background:var(--av)"></i></div></div><div class="kpi"><span>المتبقي على المشترين</span><b style="color:var(--amb)">${omr(contract-col)}</b></div><div class="kpi"><span>قيمة المتاح بسعر القائمة</span><b>${omr(listAv)}</b></div></div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3>المشترون والأرصدة</h3><button class="pill sm" id="csv">نسخ الجدول CSV</button></div>
+  ${deals.length?`<div class="scroll"><table class="stack" style="margin-top:10px"><thead><tr><th>الوحدة</th><th>الحالة</th><th>المشتري</th><th>الهاتف</th><th class="n">سعر البيع</th><th class="n">المدفوع</th><th class="n">المتبقي</th><th>التاريخ</th></tr></thead><tbody>${deals.sort((a,b)=>a[0].localeCompare(b[0],'en',{numeric:true})).map(([code,s])=>{const u=us.find(x=>x.code===code)||{status:'unknown'},pd=paidOf(code);return `<tr><td><button class="pill sm" data-sell="${esc(code)}">${esc(code)}</button></td><td><span class="tag t-${u.status}">${ST[u.status]}</span></td><td>${esc(s.buyer)}</td><td dir="ltr">${esc(s.phone)}</td><td class="n">${omr(s.price)}</td><td class="n">${omr(pd)}</td><td class="n" style="color:${num(s.price)-pd>0?'var(--amb)':'var(--av)'}">${omr(num(s.price)-pd)}</td><td>${esc(s.date)}</td></tr>`}).join('')}</tbody></table></div>`:'<p class="mut">لا توجد حجوزات أو مبيعات بعد. افتح "الوحدات والأسعار" وسجّل أول عملية.</p>'}</div>`}
+function aInv(){const o=f=>f==='G'?-1:f==='PH'?99:+f;const us=units().sort((a,b)=>o(a.floor)-o(b.floor)||a.code.localeCompare(b.code,'en',{numeric:true})),q=(aInv.q||'').trim();
+  $('tab-inv').innerHTML=`<div class="card"><div class="row" style="justify-content:space-between"><label style="margin:0;flex:1 1 220px">بحث<input id="iq" value="${esc(q)}" placeholder="رقم الوحدة أو اسم المشتري"></label><button class="pill w" id="addU">إضافة محل / بنتهاوس</button></div><p class="note">سعر القائمة يظهر للعملاء، ويُحفظ عند الخروج من الخانة.</p>
+  <div class="scroll"><table class="stack"><thead><tr><th>الوحدة</th><th>الدور</th><th>النوع</th><th class="n">المساحة</th><th>سعر القائمة (ر.ع)</th><th>الحالة</th><th>المشتري</th><th></th></tr></thead><tbody>${us.filter(u=>!q||u.code.includes(q)||(S[u.code]?.buyer||'').includes(q)).map(u=>`<tr><td><b>${esc(u.code)}</b></td><td>${esc(LV(u.floor))}</td><td>${mdl(u)?'نموذج '+u.model:esc(kindName(u))}</td><td class="n">${area(u)?area(u).toFixed(2):'—'}</td><td><input type="number" min="0" step="100" inputmode="decimal" data-pr="${esc(u.code)}" value="${num(u.price)||''}" aria-label="سعر ${esc(u.code)}"></td><td><span class="tag t-${u.status}">${ST[u.status]}</span></td><td>${esc(S[u.code]?.buyer||'')}</td><td><button class="pill sm" data-sell="${esc(u.code)}">${S[u.code]?'تعديل':'حجز / بيع'}</button>${u.custom?` <button class="pill sm" data-del="${esc(u.code)}">حذف</button>`:''}</td></tr>`).join('')}</tbody></table></div></div>`}
+function aPay(){const deals=Object.keys(S).sort((a,b)=>a.localeCompare(b,'en',{numeric:true})),today=new Date().toISOString().slice(0,10),f=aPay.f||'',list=P.filter(p=>!f||p.unit===f).sort((a,b)=>String(b.date).localeCompare(String(a.date)));
+  $('tab-pay').innerHTML=`<div class="card"><h3>تسجيل دفعة</h3>${deals.length?`<form id="payF" class="f2" style="margin-top:12px"><label>الوحدة<select name="unit">${deals.map(c=>`<option value="${esc(c)}" ${c===f?'selected':''}>${esc(c)} — ${esc(S[c].buyer)}</option>`).join('')}</select></label><label>المبلغ (ر.ع)<input name="amount" type="number" min="0.001" step="0.001" inputmode="decimal" required></label><label>التاريخ<input name="date" type="date" value="${today}" required></label><label>طريقة الدفع<select name="method"><option>تحويل بنكي</option><option>شيك</option><option>نقدًا</option><option>بطاقة</option></select></label><label>رقم المرجع / الإيصال<input name="ref"></label><label>نوع الدفعة<select name="type"><option>عربون حجز</option><option>دفعة مقدمة</option><option>قسط</option><option>دفعة التسليم</option><option>أخرى</option></select></label><div style="align-self:end;margin-bottom:10px"><button class="pill w">حفظ الدفعة</button></div></form>`:'<p class="mut">سجّل حجزًا أو بيعًا أولًا، ثم أضف دفعاته هنا.</p>'}</div>
+  <div class="card"><div class="row" style="justify-content:space-between"><h3>سجل الدفعات</h3><label style="margin:0;min-width:200px">عرض<select id="pf"><option value="">كل الوحدات</option>${deals.map(c=>`<option ${c===f?'selected':''}>${esc(c)}</option>`).join('')}</select></label></div>
+  ${f&&S[f]?`<p>سعر البيع ${omr(S[f].price)} · مدفوع <b style="color:var(--av)">${omr(paidOf(f))}</b> · متبقٍ <b style="color:var(--amb)">${omr(num(S[f].price)-paidOf(f))}</b></p>`:''}
+  ${list.length?`<div class="scroll"><table class="stack"><thead><tr><th>التاريخ</th><th>الوحدة</th><th>المشتري</th><th>النوع</th><th>الطريقة</th><th>المرجع</th><th class="n">المبلغ</th><th></th></tr></thead><tbody>${list.map(p=>`<tr><td>${esc(p.date)}</td><td>${esc(p.unit)}</td><td>${esc(S[p.unit]?.buyer||'')}</td><td>${esc(p.type)}</td><td>${esc(p.method)}</td><td>${esc(p.ref)}</td><td class="n">${omr(p.amount)}</td><td><button class="pill sm" data-rc="${esc(p.id)}">نسخ إيصال</button> <button class="pill sm" data-dp="${esc(p.id)}">حذف</button></td></tr>`).join('')}</tbody></table></div>`:'<p class="mut">لا توجد دفعات.</p>'}</div>`}
+function aSet(){const c=CFG;$('tab-set').innerHTML=`<form id="setF" class="card f2"><label>اسم المشروع<input name="name" value="${esc(c.name||'إيفارا')}"></label><label>هاتف المبيعات<input name="phone" dir="ltr" value="${esc(c.phone||'')}" placeholder="+968 9XXX XXXX"></label><label>رقم واتساب (مع 968)<input name="whatsapp" dir="ltr" inputmode="numeric" value="${esc(c.whatsapp||'')}" placeholder="9689XXXXXXX"></label><label>العنوان<input name="addr" value="${esc(c.addr||'المعبيلة، ولاية السيب، مسقط')}"></label><label>رابط خرائط Google<input name="map" dir="ltr" value="${esc(c.map||'')}" placeholder="https://maps.app.goo.gl/..."></label><label>المطور / التسويق<input name="dev" value="${esc(c.dev||'تسويق حصري: شركة الزاد العقارية')}"></label><label>موعد التسليم المتوقع<input name="handover" value="${esc(c.handover||'')}" placeholder="مثال: الربع الرابع 2027"></label><div style="align-self:end;margin-bottom:10px"><button class="pill w">حفظ الإعدادات</button></div></form>`}
+function openSale(code){const u=units().find(x=>x.code===code),s=S[code]||{},today=new Date().toISOString().slice(0,10);
+  $('mbody').innerHTML=`<h2>${esc(kindName(u))} ${esc(code)} — ${S[code]?'تعديل العملية':'تسجيل حجز أو بيع'}</h2><p class="mut">${esc(LV(u.floor))} · سعر القائمة ${num(u.price)?omr(u.price):'غير محدد'}</p>
+  <form id="saleF" class="f2" style="margin-top:14px"><label>الحالة<select name="status"><option value="reserved" ${u.status==='reserved'?'selected':''}>محجوزة</option><option value="sold" ${u.status==='sold'?'selected':''}>مباعة</option></select></label><label>اسم المشتري<input name="buyer" required value="${esc(s.buyer||'')}"></label><label>الهاتف<input name="phone" dir="ltr" value="${esc(s.phone||'')}"></label><label>سعر البيع المتفق (ر.ع)<input name="price" type="number" min="0" step="0.001" required value="${esc(s.price??(num(u.price)||''))}"></label><label>تاريخ العقد / الحجز<input name="date" type="date" value="${esc(s.date||today)}"></label><label>الموظف المسؤول<input name="agent" value="${esc(s.agent||'')}"></label><label style="grid-column:1/-1">ملاحظات وخطة الدفع<textarea name="note" rows="3">${esc(s.note||'')}</textarea></label>
+  <div class="row" style="grid-column:1/-1"><button class="pill w">حفظ</button>${S[code]?`<button type="button" class="pill" id="cancelSale">إلغاء العملية وإرجاع الوحدة متاحة</button>`:''}</div></form><p class="note">بيانات المشتري والدفعات لا تظهر للعملاء.</p>`;
+  $('saleF').onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),st=d.status;delete d.status;d.price=num(d.price);d.by=uid||'';d.at=Date.now();try{await db.doc('sales/'+code).set(d);await db.doc('units/'+code).set({...(U[code]||{}),status:st});toast('تم الحفظ');hideMod()}catch(err){toast('تعذر الحفظ: '+(err.message||err.code))}};
+  const cb=$('cancelSale');if(cb)cb.onclick=async()=>{if(cb.dataset.sure!=='1'){cb.dataset.sure='1';cb.textContent='اضغط مرة أخرى للتأكيد (الدفعات تبقى في السجل)';return}try{await db.doc('sales/'+code).delete();await db.doc('units/'+code).set({...(U[code]||{}),status:'available'});toast('أُعيدت الوحدة متاحة');hideMod()}catch(err){toast('تعذر: '+(err.message||err.code))}};showMod()}
+function openAdd(){$('mbody').innerHTML=`<h2>إضافة وحدة</h2><form id="addF" class="f2" style="margin-top:14px"><label>النوع<select name="kind"><option value="shop">محل تجاري (الأرضي)</option><option value="ph">بنتهاوس</option></select></label><label>رقم الوحدة<input name="code" required pattern="[A-Za-z0-9\\-]{1,12}" placeholder="S-01 أو PH-1" dir="ltr"></label><label>المساحة م²<input name="area" type="number" min="0" step="0.01"></label><label>عدد الغرف (للبنتهاوس)<input name="beds" type="number" min="0" step="1"></label><label>سعر القائمة (ر.ع)<input name="price" type="number" min="0" step="100"></label><label style="grid-column:1/-1">وصف قصير يظهر للعميل<input name="note"></label><div><button class="pill w">إضافة</button></div></form>`;
+  $('addF').onsubmit=async e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target)),code=d.code.trim().toUpperCase();if(units().some(u=>u.code===code)){toast('هذا الرقم مستخدم');return}
+    try{await db.doc('units/'+code).set({custom:true,kind:d.kind,floor:d.kind==='shop'?'G':'PH',area:num(d.area),beds:num(d.beds),price:num(d.price),note:d.note||'',status:'available'});toast('أُضيفت الوحدة');hideMod()}catch(err){toast('تعذر الحفظ: '+(err.message||err.code))}};showMod()}
+function csv(){const rows=[['الوحدة','الحالة','المشتري','الهاتف','سعر البيع','المدفوع','المتبقي','التاريخ']];for(const [c,s] of Object.entries(S)){const u=units().find(x=>x.code===c),pd=paidOf(c);rows.push([c,ST[u?.status||'unknown'],s.buyer,s.phone,num(s.price),pd,num(s.price)-pd,s.date])}
+  return rows.map(r=>r.map(v=>{v=String(v??'');if(/^[=+\-@]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}).join(',')).join('\n')}
+async function copy(t,msg){t=tr(t);try{await navigator.clipboard.writeText(t);toast(msg)}catch{toast('تعذر النسخ')}}
+
+/* ================= events ================= */
+document.addEventListener('click',async e=>{const t=e.target.closest('#langBtn,[data-mode],[data-lv],[data-u],[data-model],[data-full],[data-film],[data-zoom],[data-sell],[data-del],[data-dp],[data-rc],[data-t],[data-g],#enter,#pick,#replay,#sx,#addU,#csv');if(!t)return;
+  if(t.dataset.mode){const m=t.dataset.mode;setMode(m,m==='homes'?(level&&level!=='G'&&level!=='PH'?level:bestFloor()):null)}
+  else if(t.dataset.lv){const l=t.dataset.lv;setMode(l==='G'?'street':l==='PH'?'ph':'homes',l)}
+  else if(t.dataset.u){hideMod();openUnit(t.dataset.u)}
+  else if(t.dataset.model){const m=+t.dataset.model,u=units().find(x=>x.model===m&&x.status==='available')||units().find(x=>x.model===m);$('exp').scrollIntoView({behavior:'smooth'});enter(false);openUnit(u.code)}
+  else if(t.dataset.full)fullUnit(t.dataset.full);
+  else if(t.dataset.film){$('mbody').innerHTML=`<video src="assets/hf-${t.dataset.film}.mp4" autoplay muted loop playsinline controls style="width:100%;border-radius:12px;display:block"></video>`;showMod()}
+  else if(t.dataset.zoom){$('mbody').innerHTML=`<img src="${t.dataset.zoom}" alt="" style="width:100%;border-radius:12px">`;showMod()}
+  else if(t.dataset.sell){hideMod();openSale(t.dataset.sell)}
+  else if(t.dataset.del){if(t.dataset.sure!=='1'){t.dataset.sure='1';t.textContent='تأكيد الحذف';return}try{await db.doc('units/'+t.dataset.del).delete();toast('حُذفت')}catch{toast('تعذر الحذف')}}
+  else if(t.dataset.dp){if(t.dataset.sure!=='1'){t.dataset.sure='1';t.textContent='تأكيد';return}try{await db.doc('payments/'+t.dataset.dp).delete();toast('حُذفت الدفعة')}catch{toast('تعذر الحذف')}}
+  else if(t.dataset.rc){const p=P.find(x=>x.id===t.dataset.rc);if(!p)return;const s=S[p.unit]||{};copy(`إيصال استلام — ${CFG.name||'إيفارا ريزيدنس'}\nالتاريخ: ${p.date}\nاستلمنا من: ${s.buyer||''}\nمبلغ: ${omr(p.amount)}\nعن: ${p.type} — الوحدة ${p.unit}\nالطريقة: ${p.method}${p.ref?' — مرجع '+p.ref:''}\nالمدفوع حتى الآن: ${omr(paidOf(p.unit))} من ${omr(s.price)}\nالمتبقي: ${omr(num(s.price)-paidOf(p.unit))}`,'نُسخ الإيصال')}
+  else if(t.dataset.t){document.querySelectorAll('.atabs button').forEach(b=>b.setAttribute('aria-selected',b===t));['sum','inv','pay','set','stf'].forEach(k=>$('tab-'+k).hidden=k!==t.dataset.t);renderAdmin()}
+  else if(t.dataset.g){const g=$('gal');g.scrollBy({left:(+t.dataset.g)*(LANG==='en'?1:-1)*g.clientWidth*.8,behavior:'smooth'})}
+  else if(t.id==='langBtn')setLang(LANG==='en'?'ar':'en');else if(t.id==='enter')enter(true);else if(t.id==='pick')setMode('homes',bestFloor());
+  else if(t.id==='replay'){$('film').classList.remove('gone');$('vid').currentTime=0;$('vid').play().catch(()=>{})}
+  else if(t.id==='sx'){closeSide();renderDock()}else if(t.id==='addU')openAdd();else if(t.id==='csv')copy(csv(),'نُسخ الجدول — الصقه في Excel');
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){hideMod();closeSide()}});
+$('mx').onclick=hideMod;$('mod').addEventListener('click',e=>{if(e.target.id==='mod')hideMod()});
+document.addEventListener('change',async e=>{const t=e.target;if(t.dataset.pr){const c=t.dataset.pr,v=num(t.value);if(num(U[c]?.price)===v)return;try{await db.doc('units/'+c).set({...(U[c]||{}),price:v});toast('حُفظ سعر '+c)}catch{toast('تعذر الحفظ')}}else if(t.id==='pf'){aPay.f=t.value;aPay()}});
+document.addEventListener('input',e=>{if(e.target.id==='iq'){aInv.q=e.target.value;clearTimeout(aInv.t);aInv.t=setTimeout(()=>{aInv();const i=$('iq');i.focus();i.setSelectionRange(i.value.length,i.value.length)},350)}});
+document.addEventListener('submit',async e=>{
+  if(e.target.id==='payF'){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));d.amount=num(d.amount);d.by=uid||'';d.at=Date.now();try{await db.collection('payments').add(d);aPay.f=d.unit;toast('سُجلت الدفعة');aPay()}catch(err){toast('تعذر الحفظ: '+(err.message||err.code))}}
+  if(e.target.id==='setF'){e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(d.map&&!/^https:\/\//.test(d.map)){toast('رابط الخريطة يجب أن يبدأ بـ https://');return}try{await db.doc('site/settings').set(d);toast('حُفظت الإعدادات')}catch(err){toast('تعذر الحفظ: '+(err.message||err.code))}}});
+
+/* ================= boot ================= */
+const vid=$('vid');vid.src=innerWidth/innerHeight<.9?'assets/hf-film-p.mp4':'assets/hf-film-l.mp4';vid.play().catch(()=>{});
+function enter(){$('film').classList.add('gone');setTimeout(()=>vid.pause(),1200);if(entered)return;entered=true;
+  const ev=$('extVid');ev.src='assets/hf-night-drone.mp4';ev.play().then(()=>{}).catch(()=>ev.classList.add('done'));ev.onended=()=>{ev.classList.add('done');$('bandG').classList.add('hint');setTimeout(()=>$('bandG').classList.remove('hint'),2500)};setMode('intro')}
+document.addEventListener('pointermove',bandTip);addEventListener('resize',()=>{if(mode==='intro'||mode==='street'||mode==='ph')setVB(vbFor(mode==='intro'?'full':mode),1);placePins()});
+renderModels();renderRail();renderContact();
+const vio=new IntersectionObserver(es=>{for(const e of es){const v=e.target;if(e.isIntersecting){if(!v.src&&v.dataset.src)v.src=v.dataset.src;v.play().catch(()=>{})}else v.pause()}},{rootMargin:'100px'});
+document.querySelectorAll('video[data-src]').forEach(v=>vio.observe(v));
+const eio=new IntersectionObserver(es=>{const visible=es[0].isIntersecting;if(!visible)vid.pause();else if(!$('film').classList.contains('gone'))vid.play().catch(()=>{})});eio.observe($('exp'));
+
+
+/* ================= language (AR / EN) ================= */
+const ORIG=new WeakMap(),AORIG=new WeakMap(),HASAR=/[\u0600-\u06FF]/;
+const SKIP=n=>{const p=n.parentElement;return !p||p.closest('script,style,textarea,[data-raw]')};
+function trText(n){if(SKIP(n))return;let o=ORIG.get(n);if(o===undefined){if(!HASAR.test(n.nodeValue))return;o=n.nodeValue;ORIG.set(n,o)}const v=LANG==='en'?tr(o):o;if(n.nodeValue!==v)n.nodeValue=v}
+function trAttrs(el){for(const a of ['aria-label','alt','placeholder','title']){if(!el.hasAttribute||!el.hasAttribute(a))continue;let m=AORIG.get(el);if(!m){m={};AORIG.set(el,m)}if(m[a]===undefined){const v=el.getAttribute(a);if(!HASAR.test(v))continue;m[a]=v}const v=LANG==='en'?tr(m[a]):m[a];if(el.getAttribute(a)!==v)el.setAttribute(a,v)}}
+function trTree(root){if(root.nodeType===3){trText(root);return}if(root.nodeType!==1)return;if(root.closest&&root.closest('script,style'))return;trAttrs(root);const w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT);let n;while(n=w.nextNode()){if(n.nodeType===3)trText(n);else trAttrs(n)}}
+let trBusy=false;
+const trObs=new MutationObserver(ms=>{if(trBusy)return;trBusy=true;for(const m of ms){if(m.type==='characterData'){if(ORIG.has(m.target)&&LANG==='en'&&m.target.nodeValue!==tr(ORIG.get(m.target))&&HASAR.test(m.target.nodeValue)){ORIG.delete(m.target)}trText(m.target)}else if(m.type==='attributes')trAttrs(m.target);else m.addedNodes.forEach(trTree)}trBusy=false});
+function setLang(l){LANG=l;try{localStorage.setItem('evara-lang',l)}catch(e){}document.documentElement.lang=l;document.documentElement.dir=l==='en'?'ltr':'rtl';document.title=tr('إيفارا ريزيدنس — المعبيلة');
+  $('langBtn').textContent=l==='en'?'عربي':'EN';$('langBtn').setAttribute('aria-label',l==='en'?'التبديل إلى العربية':'Switch to English');
+  trBusy=true;trTree(document.body);trBusy=false;placePins();if(mode==='intro'||mode==='street'||mode==='ph')setVB(vbFor(mode==='intro'?'full':mode),1)}
+trObs.observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['aria-label','alt','placeholder','title']});
+if(LANG==='en')setLang('en');
+/* ================= Supabase data layer ================= */
+const sb=window.supabase?supabase.createClient('https://emcbojzwilkuphkvocxc.supabase.co','sb_publishable_sTh1feSrb9kfvmeJZhr1aA_QqbHETj0'):null;
+let role=null,meEmail=null;
+const UF=['status','price','custom','kind','floor','area','beds','note'],SF=['buyer','phone','price','date','agent','note'];
+const pick=(o,ks)=>{const r={};for(const k of ks)if(o[k]!==undefined)r[k]=(o[k]===''?null:o[k]);return r};
+const clean=r=>{const o={};for(const [k,v] of Object.entries(r))if(v!==null&&k!=='updated_at')o[k]=v;return o};
+const chk=({error})=>{if(error)throw error};
+db={doc(path){const [c,id]=path.split('/');return{
+   async set(d){if(c==='units')chk(await sb.from('units').upsert({code:id,...pick(d,UF)}));else if(c==='sales')chk(await sb.from('sales').upsert({code:id,...pick(d,SF)}));else if(c==='site')chk(await sb.from('settings').update({data:d}).eq('id',1))},
+   async delete(){if(c==='units')chk(await sb.from('units').delete().eq('code',id));else if(c==='sales')chk(await sb.from('sales').delete().eq('code',id));else if(c==='payments')chk(await sb.from('payments').delete().eq('id',id))}}},
+ collection(c){return{async add(d){chk(await sb.from(c).insert(pick(d,['unit','amount','date','method','type','ref','note'])))}}}};
+async function loadUnits(){const {data,error}=await sb.from('units').select('*');if(error)return;U={};for(const r of data)U[r.code]=clean(r);loaded=true;refresh()}
+async function loadSettings(){const {data}=await sb.from('settings').select('data').eq('id',1).maybeSingle();CFG=data?.data||{};renderContact();if(admin&&!$('tab-set').hidden)aSet()}
+async function loadSales(){const {data,error}=await sb.from('sales').select('*');if(error)return;S={};for(const r of data){const o=clean(r);S[r.code]=o}renderAdmin()}
+async function loadPays(){const {data,error}=await sb.from('payments').select('*').order('date',{ascending:false});if(error)return;P=data.map(clean);if($('tab-set').hidden)renderAdmin()}
+const deb=(f,ms=250)=>{let t;return()=>{clearTimeout(t);t=setTimeout(f,ms)}};
+function showAdminSection(){const on=location.hash==='#admin'||!!meEmail;$('admin').style.display=on?'block':'none'}
+async function renderAuth(){const b=$('authBox');
+  if(meEmail&&role){b.innerHTML=`<div class="row" style="justify-content:space-between"><span class="mut">${esc(meEmail)} · ${role==='admin'?'مدير':'موظف'}</span><button class="pill sm" id="logout">تسجيل الخروج</button></div>`;$('adminUI').hidden=false;$('stfTab').hidden=role!=='admin';return}
+  $('adminUI').hidden=true;
+  if(meEmail&&!role){b.innerHTML=`<p>هذا الحساب غير مصرح له بالدخول إلى مكتب المبيعات.</p><button class="pill sm" id="logout">تسجيل الخروج</button>`;return}
+  let has=true;try{const r=await sb.rpc('has_admin');has=!!r.data}catch{}
+  b.innerHTML=has?`<h3>دخول الموظفين</h3><form id="loginF" class="f2" style="margin-top:12px"><label>البريد الإلكتروني<input name="email" type="email" required dir="ltr" autocomplete="username"></label><label>كلمة المرور<input name="password" type="password" required dir="ltr" autocomplete="current-password"></label><div style="align-self:end;margin-bottom:10px"><button class="pill w">دخول</button></div></form><p class="note">نسيت كلمة المرور؟ اطلب من المدير تعيين كلمة جديدة لك.</p>`
+   :`<h3>إنشاء حساب المدير</h3><p class="mut">أول خطوة: أنشئ حساب المدير. بعدها يضيف المدير الموظفين من تبويب "الموظفون".</p><form id="bootF" class="f2" style="margin-top:12px"><label>البريد الإلكتروني<input name="email" type="email" required dir="ltr"></label><label>كلمة المرور (8 أحرف على الأقل)<input name="password" type="password" minlength="8" required dir="ltr" autocomplete="new-password"></label><label>تأكيد كلمة المرور<input name="password2" type="password" minlength="8" required dir="ltr"></label><div style="align-self:end;margin-bottom:10px"><button class="pill w">إنشاء الحساب</button></div></form>`}
+async function onSession(sess){meEmail=sess?.user?.email?.toLowerCase()||null;role=null;admin=false;
+  if(meEmail){const {data}=await sb.from('staff').select('role').eq('email',meEmail).maybeSingle();role=data?.role||null;admin=!!role}
+  showAdminSection();await renderAuth();
+  if(admin){loadSales();loadPays();renderAdmin()}else{S={};P=[]}
+  if(selUnit&&$('side').classList.contains('on'))openUnit(selUnit)}
+let STAFF=[];
+async function aStf(){const {data}=await sb.from('staff').select('*').order('added_at');STAFF=data||[];
+  $('tab-stf').innerHTML=`<div class="card"><h3>إضافة موظف</h3><form id="stfF" class="f2" style="margin-top:12px"><label>البريد الإلكتروني<input name="email" type="email" required dir="ltr"></label><label>كلمة مرور مؤقتة (8 أحرف على الأقل)<input name="password" type="text" minlength="8" required dir="ltr"></label><label>الصلاحية<select name="role"><option value="staff">موظف مبيعات</option><option value="admin">مدير</option></select></label><div style="align-self:end;margin-bottom:10px"><button class="pill w">إضافة</button></div></form><p class="note">أعطِ الموظف بريده وكلمة المرور المؤقتة، ويدخل من صفحة الموقع ثم #admin.</p></div>
+  <div class="card"><h3>فريق المبيعات</h3><div class="scroll"><table class="stack"><thead><tr><th>البريد الإلكتروني</th><th>الصلاحية</th><th></th></tr></thead><tbody>${STAFF.map(s=>`<tr><td dir="ltr" data-raw>${esc(s.email)}</td><td>${s.role==='admin'?'مدير':'موظف'}</td><td><button class="pill sm" data-rst="${esc(s.email)}">كلمة مرور جديدة</button>${s.email!==meEmail?` <button class="pill sm" data-rmv="${esc(s.email)}">حذف</button>`:''}</td></tr>`).join('')}</tbody></table></div></div>`}
+async function fn(body){const {data,error}=await sb.functions.invoke('staff-admin',{body});if(error){let m='';try{m=(await error.context.json()).error}catch{}throw new Error(m||error.message)}return data}
+document.addEventListener('submit',async e=>{const f=e.target;
+  if(f.id==='loginF'){e.preventDefault();const d=Object.fromEntries(new FormData(f));const {error}=await sb.auth.signInWithPassword({email:d.email.trim(),password:d.password});if(error)toast('البريد أو كلمة المرور غير صحيحة')}
+  if(f.id==='bootF'){e.preventDefault();const d=Object.fromEntries(new FormData(f));if(d.password!==d.password2){toast('كلمتا المرور غير متطابقتين');return}try{await fn({action:'bootstrap',email:d.email,password:d.password});await sb.auth.signInWithPassword({email:d.email.trim(),password:d.password});toast('تم إنشاء حساب المدير')}catch(err){toast('تعذر: '+err.message)}}
+  if(f.id==='stfF'){e.preventDefault();const d=Object.fromEntries(new FormData(f));try{await fn({action:'add',...d});toast('أُضيف الموظف');aStf()}catch(err){toast('تعذر: '+err.message)}}
+});
+document.addEventListener('click',async e=>{const t=e.target.closest('#logout,[data-rst],[data-rmv]');if(!t)return;
+  if(t.id==='logout'){await sb.auth.signOut();return}
+  if(t.dataset.rst){const row=t.closest('td');if(!row.querySelector('input')){row.insertAdjacentHTML('beforeend',`<div class="row" style="margin-top:8px"><input type="text" minlength="8" placeholder="كلمة المرور الجديدة" dir="ltr" style="max-width:220px"><button class="pill sm" data-rst="${esc(t.dataset.rst)}" data-go="1">حفظ</button></div>`);return}
+    if(t.dataset.go){const v=row.querySelector('input').value;if(v.length<8){toast('8 أحرف على الأقل');return}try{await fn({action:'reset',email:t.dataset.rst,password:v});toast('تم تعيين كلمة المرور');aStf()}catch(err){toast('تعذر: '+err.message)}}}
+  if(t.dataset.rmv){if(t.dataset.sure!=='1'){t.dataset.sure='1';t.textContent='تأكيد الحذف';return}try{await fn({action:'remove',email:t.dataset.rmv});toast('حُذف الموظف');aStf()}catch(err){toast('تعذر: '+err.message)}}
+});
+addEventListener('hashchange',showAdminSection);
+if(sb){loadUnits();loadSettings();
+  sb.channel('evara').on('postgres_changes',{event:'*',schema:'public',table:'units'},deb(loadUnits)).on('postgres_changes',{event:'*',schema:'public',table:'settings'},deb(loadSettings)).on('postgres_changes',{event:'*',schema:'public',table:'sales'},deb(()=>admin&&loadSales())).on('postgres_changes',{event:'*',schema:'public',table:'payments'},deb(()=>admin&&loadPays())).subscribe();
+  sb.auth.getSession().then(({data})=>onSession(data.session));sb.auth.onAuthStateChange((ev,sess)=>{if(ev==='SIGNED_IN'||ev==='SIGNED_OUT')onSession(sess)});}
+showAdminSection();
+}
+</script>
+</body>
+</html>
