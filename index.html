@@ -45,7 +45,7 @@ body.intro #vExt::after{content:'';position:absolute;inset:0;pointer-events:none
 .btip b{font:700 16px Alexandria;margin-inline-end:8px}
 #vFloor{background:radial-gradient(70% 60% at 50% 55%,#2a2320 0%,#0d0f15 70%,#06080d 100%)}
 .fwrap{position:absolute;inset:96px 0 128px;perspective:2200px;display:grid;place-items:center}
-.fplane{height:100%;aspect-ratio:1744/2336;max-width:92vw;transform:rotateX(26deg) scale(.98);transform-origin:50% 50%;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 40px 50px rgba(0,0,0,.7))}
+.fplane{height:100%;aspect-ratio:1920/2160;max-width:92vw;transform:rotateX(26deg) scale(.98);transform-origin:50% 50%;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 40px 50px rgba(0,0,0,.7))}
 #vFloor:not(.on) .fplane{transform:rotateX(62deg) scale(.7)}
 .fplane svg{width:100%;height:100%;display:block}
 .zone{stroke-width:7;cursor:pointer;transition:fill-opacity .25s,stroke-opacity .25s;fill-opacity:0;stroke-opacity:.55;stroke-linejoin:round}
@@ -165,7 +165,7 @@ td input{margin:0;min-height:38px;padding:5px 8px}
 <section id="exp" aria-label="استكشاف المبنى">
   <div id="stage">
     <div class="view on" id="vExt"><svg id="extSvg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice" aria-label="واجهة المبنى، اختر دورًا"><defs><linearGradient id="fadeL" x1="0" x2="1"><stop offset="0" stop-color="#05070c"/><stop offset=".7" stop-color="#05070c"/><stop offset="1" stop-color="#05070c" stop-opacity="0"/></linearGradient></defs><image href="assets/ext-night.jpg" width="1920" height="1080"/><rect x="-700" y="0" width="900" height="1080" fill="url(#fadeL)"/><g id="bandG"></g><g id="shopG"></g></svg><video id="extVid" muted playsinline preload="auto"></video></div>
-    <div class="view" id="vFloor"><div class="fwrap"><div class="fplane" id="fplane"><svg id="flSvg" viewBox="0 0 1744 2336"><image href="assets/floor-3d.webp" width="1744" height="2336"/><g id="zoneG"></g></svg></div></div><p class="fnote">تصور ثلاثي الأبعاد مبني على مخطط الدور المعتمد · الأثاث للتوضيح</p></div>
+    <div class="view" id="vFloor"><div class="fwrap"><div class="fplane" id="fplane"><svg id="flSvg" viewBox="0 0 1920 2160"><image href="assets/floor-3d.webp?v=2" width="1920" height="2160"/><g id="zoneG"></g></svg></div></div><p class="fnote">تصور ثلاثي الأبعاد مبني على مخطط الدور المعتمد · الأثاث للتوضيح</p></div>
     <div class="view" id="vPhoto"><video id="phVid" muted loop playsinline preload="none"></video></div>
   </div>
   <div id="pins"></div><div class="tip" id="tip"></div><div class="btip" id="btip"></div>
@@ -296,7 +296,7 @@ function wa(t){t=tr(t);const n=String(CFG.whatsapp||'').replace(/\D/g,'');return
 
 /* ================= explorer (photoreal) ================= */
 const BANDS={"1": [[648, 884], [962, 858], [1268, 867], [1268, 948], [962, 945], [648, 955]], "2": [[648, 812], [962, 771], [1268, 785], [1268, 867], [962, 858], [648, 884]], "3": [[648, 741], [962, 684], [1268, 703], [1268, 785], [962, 771], [648, 812]], "4": [[648, 670], [962, 597], [1268, 621], [1268, 703], [962, 684], [648, 741]], "5": [[648, 598], [962, 510], [1268, 539], [1268, 621], [962, 597], [648, 670]], "6": [[648, 527], [962, 423], [1268, 458], [1268, 539], [962, 510], [648, 598]], "7": [[648, 456], [962, 336], [1268, 376], [1268, 458], [962, 423], [648, 527]], "8": [[648, 384], [962, 249], [1268, 294], [1268, 376], [962, 336], [648, 456]], "PH": [[648, 313], [962, 162], [1268, 212], [1268, 294], [962, 249], [648, 384]], "G": [[648, 955], [962, 945], [1268, 948], [1268, 1040], [962, 1042], [648, 1035]]};
-const FZ={"1": [[836, 51], [1682, 51], [1682, 806], [1234, 806], [1234, 923], [895, 923], [895, 806], [836, 806]], "2": [[47, 432], [252, 234], [404, 51], [836, 51], [836, 806], [755, 806], [755, 907], [47, 907]], "3": [[47, 907], [755, 907], [755, 1530], [47, 1530]], "4": [[47, 1530], [755, 1530], [755, 2138], [47, 2138]], "6": [[1187, 923], [1682, 923], [1682, 1507], [895, 1507], [895, 1117], [1187, 1117]], "5": [[895, 1507], [1682, 1507], [1682, 2138], [895, 2138]]};
+const FZ={"1": [[847, 319], [1006, 319], [1006, 845], [1857, 845], [1846, 72], [847, 72]], "2": [[93, 990], [888, 990], [888, 845], [997, 845], [997, 319], [830, 319], [831, 72], [502, 72], [101, 491]], "3": [[85, 1562], [887, 1562], [888, 990], [93, 990]], "4": [[77, 2127], [886, 2127], [887, 1562], [85, 1562]], "5": [[1058, 2127], [1876, 2127], [1868, 1570], [1023, 1570], [1023, 1792], [1058, 1792]], "6": [[1023, 1570], [1868, 1570], [1859, 999], [1369, 999], [1371, 1191], [1023, 1191]]};
 const VB={full:[0,0,1920,1080],street:[600,700,760,380],ph:[600,40,760,420]};
 let vbCur=[...VB.full],vbAnim=null,entered=false;
 function vbFor(k){const r=$('exp').getBoundingClientRect(),asp=r.width/r.height;let v=[...VB[k]];$('extSvg').setAttribute('preserveAspectRatio',asp<1&&k==='full'?'xMidYMin meet':'xMidYMid slice');if(k==='full'&&asp<1){v=[600,40,700,1030]}else if(k==='full'&&LANG==='en'&&asp>1.15){v=[-240,0,1920,1080]}if(k==='street'&&asp<1){v=[700,620,560,460]}return v}
