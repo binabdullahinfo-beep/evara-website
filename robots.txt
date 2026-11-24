@@ -1,4 +1,5 @@
 User-agent: *
+Disallow: /ref/
 Allow: /
 
 Sitemap: https://evara-residences.com/sitemap.xml
